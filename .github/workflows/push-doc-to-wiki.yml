@@ -14,7 +14,7 @@ env:
 
 jobs:
   sync-to-wiki:
-    if: github.repository == 'heunghingwan/Aethersailor-Custom_OpenClash_Rules' && (github.event_name != 'push' || github.ref_name == ((vars.WORK_BRANCH != '' && vars.WORK_BRANCH) || 'main'))
+    if: github.repository == 'Yaoser-Archive/Custom_OpenClash_Rules' && (github.event_name != 'push' || github.ref_name == ((vars.WORK_BRANCH != '' && vars.WORK_BRANCH) || 'main'))
     runs-on: ubuntu-latest
 
     steps:

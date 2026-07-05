@@ -34,7 +34,7 @@ logo() {
     echo -e "${C}################################################################${N}"
     echo -e "${C}#                                                              #${N}"
     echo -e "${C}#              Custom_OpenClash_Rules Auto Installer           #${N}"
-    echo -e "${C}#     https://github.com/heunghingwan/Aethersailor-Custom_OpenClash_Rules   #${N}"
+    echo -e "${C}#     https://github.com/Yaoser-Archive/Custom_OpenClash_Rules   #${N}"
     echo -e "${C}#                                                              #${N}"
     echo -e "${C}################################################################${N}"
     echo -e "${W}* OpenClash Dev 在线全自动化安装脚本${N}"

@@ -19,4 +19,4 @@
 
 > [!NOTE]
 > 此文件夹主要作为 **Wiki 的图床** 使用，直接阅读可能有缺失上下文。
-> 完整文档请访问项目 [Wiki页面](https://github.com/heunghingwan/Aethersailor-Custom_OpenClash_Rules/wiki)。
+> 完整文档请访问项目 [Wiki页面](https://github.com/Yaoser-Archive/Custom_OpenClash_Rules/wiki)。

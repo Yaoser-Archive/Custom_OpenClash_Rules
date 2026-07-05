@@ -10,7 +10,7 @@ body:
       label: 前置确认 (Pre-check)
       description: 提交前请确认以下事项，以减少无效沟通：
       options:
-        - label: 我已在 [Issue Tracker](https://github.com/heunghingwan/Aethersailor-Custom_OpenClash_Rules/issues) 中搜索过类似问题
+        - label: 我已在 [Issue Tracker](https://github.com/Yaoser-Archive/Custom_OpenClash_Rules/issues) 中搜索过类似问题
           required: true
         - label: "**我确认这确实是本项目模板文件导致的规则分流错误**"
           required: true
@@ -18,7 +18,7 @@ body:
           required: true
         - label: 我使用的是最新版本的 OpenClash 和核心
           required: true
-        - label: 我已阅读 [Wiki 故障排除](https://github.com/heunghingwan/Aethersailor-Custom_OpenClash_Rules/wiki/%E6%95%85%E9%9A%9C%E6%8E%92%E9%99%A4) 章节但未能解决
+        - label: 我已阅读 [Wiki 故障排除](https://github.com/Yaoser-Archive/Custom_OpenClash_Rules/wiki/%E6%95%85%E9%9A%9C%E6%8E%92%E9%99%A4) 章节但未能解决
           required: true
 
   - type: input

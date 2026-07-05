@@ -13,7 +13,7 @@ env:
 
 jobs:
   backup-wiki-root:
-    if: github.repository == 'heunghingwan/Aethersailor-Custom_OpenClash_Rules'
+    if: github.repository == 'Yaoser-Archive/Custom_OpenClash_Rules'
     runs-on: ubuntu-latest
 
     steps:

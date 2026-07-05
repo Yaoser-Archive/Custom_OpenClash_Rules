@@ -1,6 +1,6 @@
 # NAME: Custom_Direct
 # AUTHOR: Aethersailor
-# REPO: https://github.com/heunghingwan/Aethersailor-Custom_OpenClash_Rules
+# REPO: https://github.com/Yaoser-Archive/Custom_OpenClash_Rules
 # 强制直连域名列表，来自个人收集
 # 此规则文件中的域名会定期 PR 至 Geosite 数据库，并删除已被 Geosite 收录的域名，因此请在支持 Geosite 的软件（如 OpenClash）中使用。
 
@@ -617,7 +617,7 @@ DOMAIN-SUFFIX,aisnogames.com
 DOMAIN-SUFFIX,harbourmooc.com
 # add by Telegram user: r / Date: 2026-01-23 16:13:33
 DOMAIN-SUFFIX,zqin758.xyz
-# https://github.com/heunghingwan/Aethersailor-Custom_OpenClash_Rules/issues/355
+# https://github.com/Yaoser-Archive/Custom_OpenClash_Rules/issues/355
 DOMAIN-SUFFIX,nanshe-tech.com
 # add by Telegram user: Mairs / Date: 2026-01-22 17:59:20
 DOMAIN-SUFFIX,tcp.mk

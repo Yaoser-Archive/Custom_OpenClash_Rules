@@ -538,54 +538,54 @@ rule-providers:
     type: http
     behavior: domain
     format: mrs
-    url: https://gcore.jsdelivr.net/gh/heunghingwan/Aethersailor-Custom_OpenClash_Rules@main/rule/Custom_Direct_Domain.mrs
+    url: https://gcore.jsdelivr.net/gh/Yaoser-Archive/Custom_OpenClash_Rules@main/rule/Custom_Direct_Domain.mrs
     interval: 900
   Custom_Direct_IP:
     type: http
     behavior: ipcidr
     format: mrs
-    url: https://gcore.jsdelivr.net/gh/heunghingwan/Aethersailor-Custom_OpenClash_Rules@main/rule/Custom_Direct_IP.mrs
+    url: https://gcore.jsdelivr.net/gh/Yaoser-Archive/Custom_OpenClash_Rules@main/rule/Custom_Direct_IP.mrs
     interval: 900
   Custom_Direct_Port:
     type: http
     behavior: classical
     format: yaml
-    url: https://gcore.jsdelivr.net/gh/heunghingwan/Aethersailor-Custom_OpenClash_Rules@main/rule/Custom_Direct_Classical_Port.yaml
+    url: https://gcore.jsdelivr.net/gh/Yaoser-Archive/Custom_OpenClash_Rules@main/rule/Custom_Direct_Classical_Port.yaml
     interval: 900
   Custom_Proxy_Domain:
     type: http
     behavior: domain
     format: mrs
-    url: https://gcore.jsdelivr.net/gh/heunghingwan/Aethersailor-Custom_OpenClash_Rules@main/rule/Custom_Proxy_Domain.mrs
+    url: https://gcore.jsdelivr.net/gh/Yaoser-Archive/Custom_OpenClash_Rules@main/rule/Custom_Proxy_Domain.mrs
     interval: 900
   Custom_Proxy_IP:
     type: http
     behavior: ipcidr
     format: mrs
-    url: https://gcore.jsdelivr.net/gh/heunghingwan/Aethersailor-Custom_OpenClash_Rules@main/rule/Custom_Proxy_IP.mrs
+    url: https://gcore.jsdelivr.net/gh/Yaoser-Archive/Custom_OpenClash_Rules@main/rule/Custom_Proxy_IP.mrs
     interval: 900
   Steam_CDN_Domain:
     type: http
     behavior: domain
     format: mrs
-    url: https://gcore.jsdelivr.net/gh/heunghingwan/Aethersailor-Custom_OpenClash_Rules@main/rule/Steam_CDN_Domain.mrs
+    url: https://gcore.jsdelivr.net/gh/Yaoser-Archive/Custom_OpenClash_Rules@main/rule/Steam_CDN_Domain.mrs
     interval: 900
   Steam_CDN_IP:
     type: http
     behavior: ipcidr
     format: mrs
-    url: https://gcore.jsdelivr.net/gh/heunghingwan/Aethersailor-Custom_OpenClash_Rules@main/rule/Steam_CDN_IP.mrs
+    url: https://gcore.jsdelivr.net/gh/Yaoser-Archive/Custom_OpenClash_Rules@main/rule/Steam_CDN_IP.mrs
     interval: 900
   Encrypted_DNS_IP:
     type: http
     behavior: ipcidr
     format: mrs
-    url: https://gcore.jsdelivr.net/gh/heunghingwan/Aethersailor-Custom_OpenClash_Rules@main/rule/Encrypted_DNS_IP.mrs
+    url: https://gcore.jsdelivr.net/gh/Yaoser-Archive/Custom_OpenClash_Rules@main/rule/Encrypted_DNS_IP.mrs
     interval: 900
   Custom_Port_Direct:
     type: http
     behavior: classical
-    url: https://gcore.jsdelivr.net/gh/heunghingwan/Aethersailor-Custom_OpenClash_Rules@main/rule/Custom_Port_Direct.yaml
+    url: https://gcore.jsdelivr.net/gh/Yaoser-Archive/Custom_OpenClash_Rules@main/rule/Custom_Port_Direct.yaml
     interval: 900
   rule_direct_domain:
     type: inline

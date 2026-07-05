@@ -16,25 +16,25 @@
 Custom_Clash.ini
 
 ```text
-https://testingcf.jsdelivr.net/gh/heunghingwan/Aethersailor-Custom_OpenClash_Rules@main/cfg/Custom_Clash.ini
+https://testingcf.jsdelivr.net/gh/Yaoser-Archive/Custom_OpenClash_Rules@main/cfg/Custom_Clash.ini
 ```
 
 Custom_Clash_GFW.ini
 
 ```text
-https://testingcf.jsdelivr.net/gh/heunghingwan/Aethersailor-Custom_OpenClash_Rules@main/cfg/Custom_Clash_GFW.ini
+https://testingcf.jsdelivr.net/gh/Yaoser-Archive/Custom_OpenClash_Rules@main/cfg/Custom_Clash_GFW.ini
 ```
 
 Custom_Clash_Lite.ini
 
 ```text
-https://testingcf.jsdelivr.net/gh/heunghingwan/Aethersailor-Custom_OpenClash_Rules@main/cfg/Custom_Clash_Lite.ini
+https://testingcf.jsdelivr.net/gh/Yaoser-Archive/Custom_OpenClash_Rules@main/cfg/Custom_Clash_Lite.ini
 ```
 
 Custom_Full_Clash.ini
 
 ```text
-https://testingcf.jsdelivr.net/gh/heunghingwan/Aethersailor-Custom_OpenClash_Rules@main/cfg/Custom_Clash_Full.ini
+https://testingcf.jsdelivr.net/gh/Yaoser-Archive/Custom_OpenClash_Rules@main/cfg/Custom_Clash_Full.ini
 ```
 
 ---

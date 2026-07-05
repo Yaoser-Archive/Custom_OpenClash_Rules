@@ -1,7 +1,7 @@
 #!/bin/sh
 # ================================================================
 # Custom_OpenClash_Rules 自动安装脚本
-# 项目地址: https://github.com/heunghingwan/Aethersailor-Custom_OpenClash_Rules
+# 项目地址: https://github.com/Yaoser-Archive/Custom_OpenClash_Rules
 # 功能: 自动安装/更新 OpenClash Dev 版本及全套配置
 # ================================================================
 
@@ -48,7 +48,7 @@ logo() {
     echo -e "${C}################################################################${N}"
     echo -e "${C}#                                                              #${N}"
     echo -e "${C}#              Custom_OpenClash_Rules Auto Installer           #${N}"
-    echo -e "${C}#     https://github.com/heunghingwan/Aethersailor-Custom_OpenClash_Rules   #${N}"
+    echo -e "${C}#     https://github.com/Yaoser-Archive/Custom_OpenClash_Rules   #${N}"
     echo -e "${C}#                                                              #${N}"
     echo -e "${C}################################################################${N}"
     echo -e "${W}* OpenClash Dev 在线全自动化安装与更新脚本${N}"

@@ -1,6 +1,6 @@
 # NAME: Encrypted_DNS
 # AUTHOR: Aethersailor
-# REPO: https://github.com/heunghingwan/Aethersailor-Custom_OpenClash_Rules
+# REPO: https://github.com/Yaoser-Archive/Custom_OpenClash_Rules
 # 加密 DNS 规则
 
 IP-CIDR,101.102.103.104/32,no-resolve
