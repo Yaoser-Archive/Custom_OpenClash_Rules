@@ -1,0 +1,17 @@
+# Generated from sr_cnip_ad.conf
+# SOURCE: https://github.com/Johnshall/Shadowrocket-ADBlock-Rules-Forever
+# REPO: https://github.com/Yaoser-Archive/Custom_OpenClash_Rules
+# TOTAL: 10
+# ACTION: PROXY
+
+payload:
+  - '+.api.onedrive.com'
+  - '+.centralus1.mediap.svc.ms'
+  - '+.dm.files.1drv.com'
+  - '+.gate.hockeyapp.net'
+  - '+.location.microsoft.com'
+  - '+.mobile.pipe.aria.microsoft.com'
+  - '+.odc.officeapps.live.com'
+  - '+.raw.githubusercontent.com'
+  - '+.skyapi.live.net'
+  - '+.vortex.data.microsoft.com'
