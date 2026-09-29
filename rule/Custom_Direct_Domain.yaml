@@ -1,12 +1,9 @@
 # Generated from rule/Custom_Direct.list
 # REPO: https://github.com/Aethersailor/Custom_OpenClash_Rules
 # SOURCE: https://github.com/Aethersailor/Custom_OpenClash_Rules/blob/main/rule/Custom_Direct.list
-# TOTAL: 915
+# TOTAL: 914
 
 payload:
-  - '*m-team*'
-  - '*quickconnect*'
-  - '*synology*'
   - '+.00333118.com'
   - '+.0044696.com'
   - '+.028zk01.net'
@@ -243,6 +240,7 @@ payload:
   - '+.dtproj.top'
   - '+.dushe1.app'
   - '+.dytt8.com'
+  - '+.e0x233.com'
   - '+.eagsen.com'
   - '+.easytier.top'
   - '+.easytomessage.com'
@@ -342,6 +340,7 @@ payload:
   - '+.gootho.com'
   - '+.gpetrip.com'
   - '+.gpgwx.com'
+  - '+.grz-hx.com'
   - '+.gseen.com'
   - '+.gsgltz.com'
   - '+.gsjkjt.com'
