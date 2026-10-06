@@ -1,0 +1,7 @@
+{
+  "converter_image": "aethersailor/subconverter-extended@sha256:2589f8278cae8a3478cf986d8f55b16005449194fa86e25a7d312f15eb521121",
+  "mihomo_url": "https://github.com/MetaCubeX/mihomo/releases/download/v1.19.31/mihomo-linux-amd64-compatible-v1.19.31.gz",
+  "mihomo_sha256": "04cf9f09671704f839ddbee2e93069dc831a4123a75281e725d1d96ab9ac1afc",
+  "actionlint_url": "https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz",
+  "actionlint_sha256": "8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8"
+}

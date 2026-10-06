@@ -1,0 +1,51 @@
+name: Validate Lite template
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+    paths: ['cfg/Custom_Clash_Lite.ini', 'rule/*.yaml', '.github/**']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lite-validation-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: validate-lite
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.11'
+      - name: Prepare isolated tools and candidate
+        env:
+          TOOLS: ${{ runner.temp }}/lite-tools
+        run: |
+          set -euo pipefail
+          python -m pip install -r .github/requirements.txt
+          python .github/scripts/setup_tools.py "$GITHUB_WORKSPACE" "$TOOLS"
+          cp -r cfg rule "$TOOLS/candidate/"
+      - name: Validate scripts and workflow definitions
+        env:
+          TOOLS: ${{ runner.temp }}/lite-tools
+        run: |
+          set -euo pipefail
+          python -B -m unittest discover -s .github/scripts -p 'test_*.py'
+          "$TOOLS/actionlint" .github/workflows/*.yml
+      - name: Validate full converted template
+        env:
+          TOOLS: ${{ runner.temp }}/lite-tools
+        run: |
+          python .github/scripts/validate.py --root "$TOOLS/candidate" \
+            --config-path /base/config/lite-ci/cfg/Custom_Clash_Lite.ini --core "$TOOLS/mihomo"
+      - name: Stop isolated validation container
+        if: always()
+        run: docker rm -f lite-validation

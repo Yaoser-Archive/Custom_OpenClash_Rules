@@ -53,6 +53,8 @@
 
 欢迎 ⭐star！
 
+Lite 的模板和规则由同一流程验证后发布到 `published` 分支。维护、缓存检查与固定版本工具说明见 [Lite 发布链路](docs/lite-publication.md)。终端继续使用已有订阅地址。
+
 ---
 
 > [!NOTE]

@@ -28,7 +28,7 @@ https://testingcf.jsdelivr.net/gh/Yaoser-Archive/Custom_OpenClash_Rules@main/cfg
 Custom_Clash_Lite.ini
 
 ```text
-https://testingcf.jsdelivr.net/gh/Yaoser-Archive/Custom_OpenClash_Rules@main/cfg/Custom_Clash_Lite.ini
+https://cdn.jsdelivr.net/gh/Yaoser-Archive/Custom_OpenClash_Rules@published/cfg/Custom_Clash_Lite.ini
 ```
 
 Custom_Full_Clash.ini
@@ -40,5 +40,7 @@ https://testingcf.jsdelivr.net/gh/Yaoser-Archive/Custom_OpenClash_Rules@main/cfg
 ---
 
 ## 归档文件夹
+
+Lite 的 `published` 入口只在验证成功后更新；其发布清单为同分支的 `manifest.json`。维护步骤见 [Lite 发布链路](../docs/lite-publication.md)。其他模板继续沿用各自现有入口。
 
 `archived/` 文件夹包含已弃用的配置文件，保留用于历史参考。详情请查看 [archived/README.md](archived/README.md)。
