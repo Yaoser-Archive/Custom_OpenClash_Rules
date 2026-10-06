@@ -1,31 +1,48 @@
 name: Dependabot auto-merge
 
 on:
-  pull_request_target:
-    types: [opened, reopened, synchronize, ready_for_review, labeled]
+  workflow_run:
+    workflows: [Validate Lite template]
+    types: [completed]
 
 permissions:
   contents: write
   pull-requests: write
+  checks: read
 
 jobs:
   enable-automerge:
-    if: github.event.pull_request.user.login == 'dependabot[bot]' && contains(github.event.pull_request.labels.*.name, 'automerge')
-    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.event == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
     steps:
-      - name: Enable auto-merge
-        uses: actions/github-script@v8
+      # Never check out or execute code from the privileged workflow_run payload.
+      - uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         with:
           script: |
-            const pr = context.payload.pull_request;
-            await github.graphql(
-              `mutation($pullRequestId: ID!, $mergeMethod: PullRequestMergeMethod!) {
-                enablePullRequestAutoMerge(input: {pullRequestId: $pullRequestId, mergeMethod: $mergeMethod}) {
-                  pullRequest { number }
-                }
-              }`,
-              {
-                pullRequestId: pr.node_id,
-                mergeMethod: "SQUASH",
+            const run = context.payload.workflow_run;
+            for (const linked of run.pull_requests) {
+              const {data: pr} = await github.rest.pulls.get({
+                ...context.repo, pull_number: linked.number
+              });
+              if (pr.state !== 'open' || pr.draft ||
+                  pr.user.login !== 'dependabot[bot]' ||
+                  pr.head.repo.full_name !== context.repo.owner + '/' + context.repo.repo ||
+                  pr.head.sha !== run.head_sha ||
+                  !pr.labels.some(label => label.name === 'automerge')) continue;
+              const checks = await github.paginate(github.rest.checks.listForRef, {
+                ...context.repo, ref: pr.head.sha, per_page: 100
+              });
+              const matching = checks.filter(check =>
+                check.name === 'validate-lite' && check.app?.slug === 'github-actions' &&
+                check.check_suite?.id === run.check_suite_id);
+              if (!matching.length || matching.some(check =>
+                  check.status !== 'completed' || check.conclusion !== 'success')) {
+                core.info('Required validation for this exact PR revision is not green.');
+                continue;
               }
-            );
+              await github.graphql(
+                'mutation($id: ID!) { enablePullRequestAutoMerge(input: {pullRequestId: $id, mergeMethod: SQUASH}) { pullRequest { number } } }',
+                {id: pr.node_id}
+              );
+            }
