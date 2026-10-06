@@ -1,0 +1,45 @@
+{
+  "files": {
+    "cfg/Custom_Clash_Lite.ini": {
+      "behavior": "ini",
+      "sha256": "16ee30743f1ce61aba084a54a0eaebb950f0775e85035e231d66fbcb6852b209"
+    },
+    "rule/Custom_Direct_Classical_IP.yaml": {
+      "behavior": "classical",
+      "sha256": "defa4d0f7802ab861fff02556ee4a5edbcb728c5de585b678bf56bcb79132fbe"
+    },
+    "rule/Custom_Direct_Domain.yaml": {
+      "behavior": "domain",
+      "sha256": "d72261d65b4b92190dca8789f1965fb892a99856304b92f15439d5952d9bf2d0"
+    },
+    "rule/Custom_Port_Direct.yaml": {
+      "behavior": "classical",
+      "sha256": "379778da1e41a1abd4092dc03a9706831e23513f591da82d2e38503da2b18db9"
+    },
+    "rule/Custom_Proxy_Classical_IP.yaml": {
+      "behavior": "classical",
+      "sha256": "7521fe7b8ecf538f7dbd13ea69acf9149d0e5598741c05285c120419e109e216"
+    },
+    "rule/Custom_Proxy_Domain.yaml": {
+      "behavior": "domain",
+      "sha256": "608cc5c2bc6523cebb5aa90b930e1f2361040febdbfd5674953a049e0aaef25d"
+    },
+    "rule/Game_Download_CDN_Classical_IP.yaml": {
+      "behavior": "classical",
+      "sha256": "d75a08ec5cda83729bf6cc24ee44a597692a3ff5913b855254aff9746879bd84"
+    },
+    "rule/Game_Download_CDN_Domain.yaml": {
+      "behavior": "domain",
+      "sha256": "89f6c9dac8b76bc023037f6b04537a777de34f0cf9eb4ae778d7428ae44483b8"
+    },
+    "rule/Steam_CDN_Classical.yaml": {
+      "behavior": "classical",
+      "sha256": "8886d52d6d7c595d49694ef9db818d0ca0017b1b7b19a1040430e7b7e1b5a1b0"
+    }
+  },
+  "repository": "Yaoser-Archive/Custom_OpenClash_Rules",
+  "schema_version": 1,
+  "source_sha": "04c3755158ae6d92c503204da8608ae0f07df26c",
+  "template": "cfg/Custom_Clash_Lite.ini",
+  "upstream_sha": "4345c66d60f762188271642809b492bd783f4057"
+}
