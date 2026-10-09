@@ -1,7 +1,7 @@
 # Generated from rule/Custom_Direct.list
 # REPO: https://github.com/Aethersailor/Custom_OpenClash_Rules
 # SOURCE: https://github.com/Aethersailor/Custom_OpenClash_Rules/blob/main/rule/Custom_Direct.list
-# TOTAL: 932
+# TOTAL: 941
 
 payload:
   - '+.00333118.com'
@@ -152,6 +152,7 @@ payload:
   - '+.boxim.online'
   - '+.boxkj.com'
   - '+.boyuemobile.com'
+  - '+.bs-iot.com'
   - '+.bsbsb.top'
   - '+.bunny.net'
   - '+.bvmlt.top'
@@ -452,6 +453,7 @@ payload:
   - '+.ip159.com'
   - '+.ip6.seeip.org'
   - '+.ipapi.co'
+  - '+.ipjrh.com'
   - '+.iposl.com'
   - '+.ipshu.com'
   - '+.iquantumad.com'
@@ -581,6 +583,7 @@ payload:
   - '+.myrny.xin'
   - '+.myshopex.com'
   - '+.mystery0.vip'
+  - '+.naitanghuyu.com'
   - '+.naixi.com'
   - '+.nanhuabx.com'
   - '+.nanshe-tech.com'
@@ -692,6 +695,7 @@ payload:
   - '+.senachina.com'
   - '+.senmuse.com'
   - '+.server2.cn2gias.uk'
+  - '+.sgllife.com'
   - '+.sgtv.ii00.cc'
   - '+.shanghai-parking.com'
   - '+.shanghongbei.com'
@@ -717,6 +721,7 @@ payload:
   - '+.snltty.com'
   - '+.soulteary.com'
   - '+.spisec.com'
+  - '+.spst1.com'
   - '+.sptv.ii00.cc'
   - '+.ssjj2.com'
   - '+.starlink.uno'
@@ -753,6 +758,7 @@ payload:
   - '+.tggfl.com'
   - '+.tgpro.net'
   - '+.tgpro.top'
+  - '+.thejoyridegames.com'
   - '+.theluyuan.com'
   - '+.theuwa.com'
   - '+.thinkerride.com'
@@ -816,6 +822,7 @@ payload:
   - '+.wetolink.com'
   - '+.wewillpro.com'
   - '+.wildfirechat.net'
+  - '+.wisecleaner.net'
   - '+.wjx.top'
   - '+.wlcdn88.com'
   - '+.wlkac.com'
@@ -834,6 +841,7 @@ payload:
   - '+.xdqtech.com'
   - '+.xdtool.com'
   - '+.xesabc.com'
+  - '+.xesim.cc'
   - '+.xesim.net'
   - '+.xfltd.org'
   - '+.xgzb.top'
@@ -882,6 +890,7 @@ payload:
   - '+.ycyct.com'
   - '+.ydayc.com'
   - '+.yhxjkj.top'
+  - '+.yi-ll.com'
   - '+.yibanbianji.com'
   - '+.yicaiykt.com'
   - '+.yingshi.dog'
