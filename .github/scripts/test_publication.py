@@ -94,23 +94,71 @@ class ResourceTests(unittest.TestCase):
 
 
 class CacheTests(unittest.TestCase):
+    def test_retry_logs_distinguish_stages_and_keep_last_failure(self):
+        from test_cache_refresh import FakeClock, finished
+        failures = [('purge_request', contract.ResourceFetchError('HTTP 429', status=429)),
+                    ('purge_status', b'{}'),
+                    ('cdn_request', TimeoutError('timed out')),
+                    ('cdn_digest', b'stale')]
+        for stage, failure in failures:
+            with self.subTest(stage=stage):
+                timer = FakeClock()
+                def fetch(url, **kwargs):
+                    if 'purge.jsdelivr.net' in url:
+                        if stage == 'purge_request':
+                            raise failure
+                        if stage == 'purge_status':
+                            return failure if '/status/' in url else b'{"id":"task-1","status":"pending"}'
+                        return finished()
+                    if stage == 'cdn_request':
+                        raise failure
+                    return b'stale'
+                output = io.StringIO()
+                with mock.patch('sys.stdout', output), self.assertRaisesRegex(RuntimeError, stage):
+                    cache_refresh.refresh_file(contract.TEMPLATE, '0' * 64, fetch=fetch,
+                                               sleep=timer.sleep, clock=timer.now, budget=15)
+                events = [json.loads(line) for line in output.getvalue().splitlines()]
+                failures_for_stage = [e for e in events if e['event'] == 'cache_retry_failed' and e['stage'] == stage]
+                self.assertTrue(failures_for_stage)
+                self.assertTrue(all(e['attempt'] > 0 and e['branch'] == 'published' for e in failures_for_stage))
+                self.assertTrue(all(e['path'] == contract.TEMPLATE for e in events))
+                if stage == 'cdn_digest':
+                    self.assertIn(contract.digest(b'stale'), failures_for_stage[-1]['error'])
+
+    def test_fetch_preserves_http_status_and_timeout_reason(self):
+        for error, expected in [(urllib.error.HTTPError('https://example.invalid', 429, 'rate limited', {}, None), 'HTTP 429'),
+                                (TimeoutError('timed out'), 'timed out')]:
+            with mock.patch.object(contract.urllib.request, 'urlopen'):
+                def fail(*args, **kwargs):
+                    raise error
+                with self.assertRaisesRegex(RuntimeError, expected):
+                    contract.fetch('https://example.invalid', opener=fail, attempts=1)
+
     def test_async_purge_and_stale_cache_are_retried(self):
+        from test_cache_refresh import FakeClock, finished
         body = b'approved'
-        replies = iter([b'{"status":"pending"}', b'{"status":"finished"}', b'stale',
-                        b'{"status":"finished"}', body])
+        timer = FakeClock()
+        replies = iter([b'stale', b'{"id":"task-1","status":"pending"}',
+                        finished(), body])
         requests = []
         def fetch(url, **kwargs):
             requests.append(url)
             return next(replies)
-        cache_refresh.refresh_file(contract.TEMPLATE, contract.digest(body), fetch=fetch, sleep=lambda _: None)
-        self.assertEqual(len(requests), 5)
+        cache_refresh.refresh_file(contract.TEMPLATE, contract.digest(body), fetch=fetch,
+                                   sleep=timer.sleep, clock=timer.now)
+        self.assertEqual(len(requests), 4)
+        self.assertEqual(len([url for url in requests if 'purge.jsdelivr.net/gh/' in url]), 1)
+        self.assertIn('/status/task-1', requests[2])
         self.assertTrue(all('?' not in url for url in requests))
 
     def test_finished_status_does_not_hide_wrong_bytes(self):
+        from test_cache_refresh import FakeClock, finished
+        timer = FakeClock()
         def fetch(url, **kwargs):
-            return b'{"status":"finished"}' if 'purge.jsdelivr.net' in url else b'stale'
+            return finished() if 'purge.jsdelivr.net' in url else b'stale'
         with self.assertRaises(RuntimeError):
-            cache_refresh.refresh_file(contract.TEMPLATE, '0' * 64, fetch=fetch, sleep=lambda _: None)
+            cache_refresh.refresh_file(contract.TEMPLATE, '0' * 64, fetch=fetch,
+                                       sleep=timer.sleep, clock=timer.now, budget=15)
 
 
 class PublicationTests(unittest.TestCase):

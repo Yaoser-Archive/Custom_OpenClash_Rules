@@ -38,6 +38,10 @@ GROUP_NAMES = set(GROUP_DEFAULTS) | {'自动选择', '美国节点'}
 MAX_BYTES = 1024 * 1024
 GOOGLE_DNS_SERVERS = ['https://8.8.8.8/dns-query', 'https://8.8.4.4/dns-query']
 GOOGLE_DNS_KEYS = ['geosite:google-cn', 'geosite:googlefcm', 'geosite:google']
+ORIBIT_DIRECT_HOSTS = tuple(name + '.oribit.cn' for name in
+                            ('sc', 'nj', 'cyber', 'cybercd2', 'dragon', 'dsh'))
+EXPECTED_RULE_COUNT = 34
+CONTRACT_VERSION = 'lite-google-oribit-34-v1'
 SHA = re.compile(r'^[0-9a-f]{40}$')
 DIGEST = re.compile(r'^[0-9a-f]{64}$')
 
@@ -59,6 +63,16 @@ def digest(body):
     return hashlib.sha256(body).hexdigest()
 
 
+class ResourceFetchError(RuntimeError):
+    """Resource failure with retry metadata, while retaining RuntimeError compatibility."""
+
+    def __init__(self, message, status=None, retry_after=None, cause=None):
+        super().__init__(message)
+        self.status = status
+        self.retry_after = retry_after
+        self.cause = cause
+
+
 def fetch(url, timeout=30, attempts=3, opener=urllib.request.urlopen, sleep=time.sleep):
     """Bounded HTTP GET. Never accept an HTTP error body as a resource."""
     last = None
@@ -66,8 +80,10 @@ def fetch(url, timeout=30, attempts=3, opener=urllib.request.urlopen, sleep=time
         try:
             request = urllib.request.Request(url, headers={'User-Agent': 'Lite-Rule-Publisher/1'})
             with opener(request, timeout=timeout) as response:
-                if response.getcode() != 200:
-                    raise ValueError('HTTP status is not 200')
+                status = response.getcode()
+                if status != 200:
+                    raise urllib.error.HTTPError(url, status, 'Unexpected HTTP status',
+                                                 getattr(response, 'headers', None), None)
                 body = response.read(MAX_BYTES + 1)
                 if not body or len(body) > MAX_BYTES:
                     raise ValueError('empty or oversized resource')
@@ -76,7 +92,12 @@ def fetch(url, timeout=30, attempts=3, opener=urllib.request.urlopen, sleep=time
             last = exc
             if attempt + 1 < attempts:
                 sleep(2 * (attempt + 1))
-    raise RuntimeError('resource fetch failed: ' + type(last).__name__)
+    detail = 'HTTP {}'.format(last.code) if isinstance(last, urllib.error.HTTPError) else str(last)
+    status = last.code if isinstance(last, urllib.error.HTTPError) else None
+    headers = getattr(last, 'headers', None)
+    retry_after = headers.get('Retry-After') if headers is not None else None
+    raise ResourceFetchError('resource fetch failed: {}: {}'.format(type(last).__name__, detail),
+                             status=status, retry_after=retry_after, cause=last) from last
 
 
 def validate_rule(body, behavior):
@@ -133,6 +154,8 @@ def expected_rules():
         ('谷歌服务', 'IP-CIDR,8.8.8.8/32,no-resolve'),
         ('谷歌服务', 'IP-CIDR,8.8.4.4/32,no-resolve'),
         ('谷歌服务', 'GEOIP,google,no-resolve'),
+    ] + [(direct, 'DOMAIN,' + host) for host in ORIBIT_DIRECT_HOSTS] + [
+        (proxy, 'DOMAIN-SUFFIX,oribit.cn'),
         (direct, 'Custom_Direct_Domain.yaml'), (direct, 'Custom_Direct_Classical_IP.yaml'),
         (proxy, 'Custom_Proxy_Domain.yaml'), (proxy, 'Custom_Proxy_Classical_IP.yaml'),
         (direct, 'GEOSITE,category-games@cn'),
@@ -196,9 +219,6 @@ def validate_template(body):
     for name, default in GROUP_DEFAULTS.items():
         if groups[name][1:3] != ['select', '[]' + default]:
             raise ValueError('group default changed: ' + name)
-    for name in ('谷歌服务', '谷歌FCM'):
-        if any(p in ('[]全球直连', '[]DIRECT') for p in groups[name][2:]):
-            raise ValueError('Google groups must never offer a direct route')
     for name, parts in groups.items():
         for part in parts[2:]:
             if part.startswith('[]') and part[2:] not in GROUP_NAMES | {'DIRECT', 'REJECT'}:
@@ -207,7 +227,25 @@ def validate_template(body):
             if len(parts) != 5 or parts[3] != 'https://cp.cloudflare.com/generate_204' or parts[4] != '300,,50':
                 raise ValueError('health check behavior changed')
             re.compile(parts[2])
+    references = {name: [part[2:] for part in parts[2:] if part.startswith('[]')]
+                  for name, parts in groups.items()}
+    validate_no_direct_routes(references)
     return groups
+
+
+def validate_no_direct_routes(groups, roots=('谷歌服务', '谷歌FCM')):
+    """Reject DIRECT through any selectable nested group, rather than only direct members."""
+    def visit(name, ancestors):
+        if name == 'DIRECT':
+            raise ValueError('Google groups must never offer a direct route')
+        if name not in groups:
+            return
+        if name in ancestors:
+            raise ValueError('cyclic groups')
+        for member in groups[name]:
+            visit(member, ancestors | {name})
+    for root in roots:
+        visit(root, set())
 
 
 def placeholder_links(names):
@@ -272,6 +310,7 @@ def validate_policy(value, names):
                 visit(member, ancestors | {name})
     for name in groups:
         visit(name, set())
+    validate_no_direct_routes({name: group['proxies'] for name, group in groups.items()})
     providers = value.get('rule-providers')
     if not isinstance(providers, dict) or len(providers) != len(RULES):
         raise ValueError('rule providers changed')
