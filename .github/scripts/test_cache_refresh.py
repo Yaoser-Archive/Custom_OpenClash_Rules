@@ -58,6 +58,14 @@ class CacheRefreshTests(unittest.TestCase):
         self.assertNotIn('?', calls[0][0])
         self.assertEqual(calls[0][1], {'attempts': 1, 'timeout': 10})
         self.assertEqual(events[-1]['event'], 'cache_verified')
+        for evidence in (result, events[-1]):
+            self.assertEqual(evidence['expected_hash'], DIGEST)
+            self.assertEqual(evidence['actual_hash'], DIGEST)
+            self.assertEqual(evidence['stage'], 'cdn_request')
+            self.assertEqual(evidence['attempts'], {'cdn_request': 1})
+            self.assertEqual(evidence['http_errors'], [])
+            self.assertIsNone(evidence['purge_id'])
+            self.assertIsNone(evidence['purge_status'])
 
     def test_pending_task_is_polled_without_another_purge(self):
         counts = {'cdn': 0, 'purge': 0, 'status': 0}
@@ -84,9 +92,16 @@ class CacheRefreshTests(unittest.TestCase):
         def fetch(url, **kwargs):
             return finished() if 'purge.jsdelivr.net' in url else b'stale'
         with mock.patch('sys.stdout', io.StringIO()), self.assertRaisesRegex(
-                cache_refresh.CacheVerificationError, contract.digest(b'stale')):
+                cache_refresh.CacheVerificationError, contract.digest(b'stale')) as error:
             self.run_file(fetch, timer, budget=15)
         self.assertLessEqual(timer.value, 15)
+        evidence = error.exception.cache_result
+        self.assertFalse(evidence['cache_verified'])
+        self.assertEqual(evidence['actual_hash'], contract.digest(b'stale'))
+        self.assertEqual(evidence['expected_hash'], DIGEST)
+        self.assertEqual(evidence['purge_status'], 'finished')
+        self.assertTrue(evidence['purge_finished'])
+        self.assertGreater(evidence['attempts']['cdn_digest'], 0)
 
     def test_pending_forever_is_bounded_and_purge_is_not_repeated(self):
         timer = FakeClock()
@@ -153,10 +168,17 @@ class CacheRefreshTests(unittest.TestCase):
         def fetch(url, **kwargs):
             calls.append(url)
             raise TimeoutError('read timed out')
-        with mock.patch('sys.stdout', io.StringIO()), self.assertRaises(cache_refresh.CacheVerificationError):
+        with mock.patch('sys.stdout', io.StringIO()), self.assertRaises(cache_refresh.CacheVerificationError) as error:
             self.run_file(fetch, timer, budget=30)
         self.assertTrue(all('cdn.jsdelivr.net' in url for url in calls))
         self.assertLessEqual(timer.value, 30)
+        evidence = error.exception.cache_result
+        self.assertIsNone(evidence['actual_hash'])
+        self.assertEqual(evidence['expected_hash'], DIGEST)
+        self.assertEqual(evidence['stage'], 'cdn_request')
+        self.assertEqual(len(evidence['http_errors']), len(calls))
+        self.assertIsNone(evidence['http_errors'][0]['http_status'])
+        self.assertEqual(evidence['http_errors'][0]['error_type'], 'TimeoutError')
 
     def test_lost_purge_response_is_not_resubmitted(self):
         counts = {'cdn': 0, 'purge': 0}
@@ -200,6 +222,11 @@ class CacheRefreshTests(unittest.TestCase):
         self.assertEqual(timer.waits[0], 8)
         rate_limit = [event for event in events if event.get('http_status') == 429][0]
         self.assertEqual(rate_limit['retry_after'], '8')
+        self.assertEqual(result['http_errors'], [dict(stage='purge_request', attempt=1,
+                                                    error_type='ResourceFetchError', error='HTTP 429',
+                                                    http_status=429, retry_after='8')])
+        self.assertEqual(result['purge_status'], 'finished')
+        self.assertEqual(result['actual_hash'], DIGEST)
 
     def test_retry_after_date_invalid_header_and_budget(self):
         date = email.utils.formatdate(1015, usegmt=True)
@@ -333,22 +360,44 @@ class CacheRefreshTests(unittest.TestCase):
                 barrier.wait(timeout=5)
             with lock:
                 state['active'] -= 1
-        with mock.patch.object(contract, 'fetch', return_value=json.dumps(manifest).encode()), \
-                mock.patch.object(cache_refresh, 'refresh_file', side_effect=refresh_one), \
-                mock.patch('sys.stdout', io.StringIO()), mock.patch.dict(cache_refresh.os.environ, {}, clear=True):
-            cache_refresh.refresh('a' * 40)
+            return self.verified_result(path, digest, branch)
+        with tempfile.TemporaryDirectory() as tmp:
+            summary = pathlib.Path(tmp) / 'summary.md'
+            with mock.patch.object(contract, 'fetch', return_value=json.dumps(manifest).encode()), \
+                    mock.patch.object(cache_refresh, 'refresh_file', side_effect=refresh_one), \
+                    mock.patch('sys.stdout', io.StringIO()), \
+                    mock.patch.dict(cache_refresh.os.environ, {'GITHUB_STEP_SUMMARY': str(summary)}, clear=True):
+                cache_refresh.refresh('a' * 40)
+            records = json.loads(summary.read_text(encoding='utf-8').split('```json\n')[1].split('\n```')[0])
         self.assertEqual(len(calls), 10)
         self.assertEqual(state['peak'], 3)
         self.assertIn((PATH, 'main'), calls)
         self.assertEqual(len([branch for _, branch in calls if branch == 'published']), 9)
+        self.assertEqual(len(records), 10)
+        self.assertEqual({(item['path'], item['branch']) for item in records}, set(calls))
+        for item in records:
+            self.assertTrue(item['cache_verified'])
+            self.assertEqual(item['expected_hash'], DIGEST)
+            self.assertEqual(item['actual_hash'], DIGEST)
+            self.assertEqual(item['attempts'], {'cdn_request': 1})
+            self.assertEqual(item['stage'], 'cdn_request')
+            self.assertEqual(item['http_errors'], [])
+            self.assertIsNone(item['purge_status'])
 
     def test_failures_keep_publication_state_and_collect_every_result(self):
         manifest = self.manifest()
         calls, output = [], io.StringIO()
+        real_refresh_file = cache_refresh.refresh_file
         def refresh_one(path, digest, branch):
             calls.append((path, branch))
+            if path == PATH and branch == 'main':
+                raise TypeError('unexpected bug')
             if path == PATH:
-                raise TypeError('unexpected bug' if branch == 'main' else 'bad client bytes')
+                timer = FakeClock()
+                return real_refresh_file(path, digest, branch=branch,
+                                         fetch=lambda url, **kw: finished() if 'purge.jsdelivr.net' in url else b'stale',
+                                         clock=timer.now, sleep=timer.sleep, budget=3)
+            return self.verified_result(path, digest, branch)
         with tempfile.TemporaryDirectory() as tmp:
             summary = pathlib.Path(tmp) / 'summary.md'
             with mock.patch.object(contract, 'fetch', return_value=json.dumps(manifest).encode()), \
@@ -360,10 +409,37 @@ class CacheRefreshTests(unittest.TestCase):
         self.assertEqual(len(calls), 10)
         self.assertIn(PATH + '@main', text)
         self.assertIn('unexpected bug', text)
+        records = json.loads(text.split('```json\n')[1].split('\n```')[0])
+        self.assertEqual(len(records), 10)
+        failed = [item for item in records if not item['cache_verified']]
+        self.assertEqual(len(failed), 2)
+        for item in failed:
+            self.assertEqual(item['expected_hash'], DIGEST)
+            self.assertEqual(item['http_errors'], [])
+            if item['branch'] == 'main':
+                self.assertIsNone(item['actual_hash'])
+                self.assertEqual(item['stage'], 'refresh_file')
+                self.assertEqual(item['error_type'], 'TypeError')
+            else:
+                self.assertEqual(item['actual_hash'], contract.digest(b'stale'))
+                self.assertEqual(item['stage'], 'cdn_digest')
+                self.assertEqual(item['error_type'], 'CacheVerificationError')
+                self.assertEqual(item['purge_status'], 'finished')
+                self.assertGreater(item['attempts']['cdn_digest'], 0)
         events = [json.loads(line) for line in output.getvalue().splitlines()]
-        self.assertEqual(len([event for event in events if event['event'] == 'cache_verification_failed']), 2)
+        failed_events = [event for event in events if event['event'] == 'cache_verification_failed']
+        self.assertEqual(len(failed_events), 2)
+        self.assertEqual([{key: value for key, value in event.items() if key != 'event'}
+                          for event in failed_events], failed)
         self.assertFalse(events[-1]['cache_verified'])
         self.assertTrue(events[-1]['published'])
+
+    @staticmethod
+    def verified_result(path, digest, branch):
+        item = cache_refresh.FileRefresh(path, digest, branch, None, None, lambda: 0, lambda: 0, 120)
+        item.stage, item.actual_hash = 'cdn_request', digest
+        item.attempts['cdn_request'] = 1
+        return item.result()
 
     @staticmethod
     def manifest():

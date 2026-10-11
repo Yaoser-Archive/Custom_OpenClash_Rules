@@ -50,6 +50,7 @@ class FileRefresh:
         self.key = contract.REPOSITORY + '@' + branch + '/' + path
         self.cdn_url = 'https://cdn.jsdelivr.net/gh/' + self.key
         self.attempts, self.errors, self.cooldowns = {}, {}, {}
+        self.stage, self.actual_hash, self.http_errors = None, None, []
         self.purge_started, self.purge_id, self.purge_finished = False, None, False
         self.purge_status, self.warnings = None, []
 
@@ -60,12 +61,17 @@ class FileRefresh:
         print(json.dumps(value, ensure_ascii=True), flush=True)
 
     def failure(self, stage, exc):
+        self.stage = stage
         self.errors[stage] = str(exc)
         status = getattr(exc, 'status', getattr(exc, 'code', None))
         headers = getattr(exc, 'headers', None)
         retry_after = getattr(exc, 'retry_after', None)
         if retry_after is None and headers:
             retry_after = headers.get('Retry-After')
+        if isinstance(exc, expected_errors()):
+            self.http_errors.append({'stage': stage, 'attempt': self.attempts.get(stage, 0),
+                                     'error_type': type(exc).__name__, 'error': str(exc),
+                                     'http_status': status, 'retry_after': retry_after})
         self.log('cache_retry_failed', stage, error_type=type(exc).__name__,
                  error=str(exc), http_status=status, retry_after=retry_after)
 
@@ -84,6 +90,7 @@ class FileRefresh:
             details or 'no verified client bytes'))
 
     def request(self, url, stage, purge=False):
+        self.stage = stage
         for attempt in range(3):
             cooldown = self.cooldowns.get(stage, 0) - self.clock()
             if cooldown > 0:
@@ -125,18 +132,19 @@ class FileRefresh:
             body = self.request(self.cdn_url, 'cdn_request')
         except expected_errors():
             return False, False
-        actual_hash = contract.digest(body)
-        if actual_hash == self.expected_hash:
+        self.actual_hash = contract.digest(body)
+        if self.actual_hash == self.expected_hash:
             if self.purge_id and not self.purge_finished:
                 warning = 'purge task not finished; client bytes already verified'
                 if warning not in self.warnings:
                     self.warnings.append(warning)
-            self.log('cache_verified', 'cdn_request', purge_requested=self.purge_started,
-                     purge_id=self.purge_id, purge_status=self.purge_status, warnings=self.warnings)
+            details = self.result()
+            details.pop('stage')
+            self.log('cache_verified', 'cdn_request', **details)
             return True, False
         self.attempts['cdn_digest'] = self.attempts.get('cdn_digest', 0) + 1
         self.failure('cdn_digest', ValueError('SHA-256 mismatch: expected={}, actual={}, bytes={}'.format(
-            self.expected_hash, actual_hash, len(body))))
+            self.expected_hash, self.actual_hash, len(body))))
         return False, True
 
     def accept_status(self, body, stage):
@@ -210,9 +218,17 @@ class FileRefresh:
             cycle += 1
         raise self.error('budget exhausted')
 
-    def result(self):
-        return {'path': self.path, 'branch': self.branch, 'cache_verified': True,
-                'purge_requested': self.purge_started, 'warnings': self.warnings}
+    def result(self, cache_verified=True, error=None):
+        value = {'path': self.path, 'branch': self.branch, 'url': self.cdn_url,
+                 'cache_verified': cache_verified, 'stage': self.stage,
+                 'attempts': dict(self.attempts), 'errors': dict(self.errors),
+                 'http_errors': list(self.http_errors), 'expected_hash': self.expected_hash,
+                 'actual_hash': self.actual_hash, 'purge_requested': self.purge_started,
+                 'purge_id': self.purge_id, 'purge_status': self.purge_status,
+                 'purge_finished': self.purge_finished, 'warnings': list(self.warnings)}
+        if error is not None:
+            value.update(error_type=type(error).__name__, error=str(error))
+        return value
 
 
 def refresh_file(path, expected_hash, branch='published', fetch=contract.fetch, sleep=time.sleep,
@@ -225,7 +241,13 @@ def refresh_file(path, expected_hash, branch='published', fetch=contract.fetch, 
         raise ValueError('invalid expected hash')
     if budget <= 0:
         raise ValueError('invalid cache verification budget')
-    return FileRefresh(path, expected_hash, branch, fetch, sleep, clock, wall_clock, budget).run()
+    item = FileRefresh(path, expected_hash, branch, fetch, sleep, clock, wall_clock, budget)
+    try:
+        return item.run()
+    except Exception as exc:
+        # Preserve the original exception and its final per-URL evidence for CI.
+        exc.cache_result = item.result(cache_verified=False, error=exc)
+        raise
 
 
 def refresh(publication_sha=None):
@@ -238,18 +260,28 @@ def refresh(publication_sha=None):
     manifest = contract.validate_manifest(json.loads(contract.fetch(url).decode('utf-8')))
     targets = [(path, item['sha256'], 'published') for path, item in sorted(manifest['files'].items())]
     targets.append((contract.TEMPLATE, manifest['files'][contract.TEMPLATE]['sha256'], 'main'))
-    failures = []
+    failures, results = [], []
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as workers:
-        pending = {(path, branch): workers.submit(refresh_file, path, digest, branch=branch)
+        pending = {(path, branch, digest): workers.submit(refresh_file, path, digest, branch=branch)
                    for path, digest, branch in targets}
-        for (path, branch), result in pending.items():
+        for (path, branch, digest), result in pending.items():
             try:
-                result.result()
+                results.append(result.result())
             except Exception as exc:
                 # Aggregate every result, but do not turn programming failures
                 # into retries or a green cache status.
-                print(json.dumps({'event': 'cache_verification_failed', 'path': path, 'branch': branch,
-                                  'error_type': type(exc).__name__, 'error': str(exc)}, ensure_ascii=True), flush=True)
+                details = getattr(exc, 'cache_result', None)
+                if details is None:
+                    details = {'path': path, 'branch': branch,
+                               'url': 'https://cdn.jsdelivr.net/gh/' + contract.REPOSITORY + '@' + branch + '/' + path,
+                               'cache_verified': False, 'stage': 'refresh_file', 'attempts': {},
+                               'errors': {}, 'http_errors': [], 'expected_hash': digest, 'actual_hash': None,
+                               'purge_requested': False, 'purge_id': None, 'purge_status': None,
+                               'purge_finished': False, 'warnings': [],
+                               'error_type': type(exc).__name__, 'error': str(exc)}
+                results.append(details)
+                event = dict(details, event='cache_verification_failed')
+                print(json.dumps(event, ensure_ascii=True), flush=True)
                 failures.append('{}@{}: {}'.format(path, branch, exc))
     status = '缓存刷新失败，已验证规则仍已发布' if failures else '缓存刷新及文件哈希校验成功'
     if os.environ.get('GITHUB_STEP_SUMMARY'):
@@ -259,6 +291,9 @@ def refresh(publication_sha=None):
                 stream.write('未通过的缓存检查：\n')
                 for failure in failures:
                     stream.write('- ' + failure.replace('\n', ' ').replace('\r', ' ') + '\n')
+            stream.write('\n逐路径检查结果：\n\n```json\n')
+            stream.write(json.dumps(results, ensure_ascii=False, indent=2))
+            stream.write('\n```\n')
     print(json.dumps({'event': 'cache_refresh_result', 'cache_verified': not failures, 'source_sha': manifest['source_sha'],
                       'published': True, 'failures': failures}, ensure_ascii=True), flush=True)
     if failures:
