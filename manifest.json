@@ -39,7 +39,7 @@
   },
   "repository": "Yaoser-Archive/Custom_OpenClash_Rules",
   "schema_version": 1,
-  "source_sha": "2faa6f40b5f761581185ca37735381fac8c6b11e",
+  "source_sha": "14b70cb9e82453de317ba94a34377fe843fd0ca8",
   "template": "cfg/Custom_Clash_Lite.ini",
   "upstream_sha": "c6d9609ff458255e8dda5819f5349d17d86fe5cd"
 }
