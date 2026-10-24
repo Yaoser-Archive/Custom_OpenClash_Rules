@@ -41,5 +41,5 @@
   "schema_version": 1,
   "source_sha": "048b09f693d3dfa49443cee1c27cea5092172975",
   "template": "cfg/Custom_Clash_Lite.ini",
-  "upstream_sha": "fb63fe62d770722235f1c196b7cf84c3cbe5de4e"
+  "upstream_sha": "c5092e4b3e4ee87357dfed15ec5db1efdd55b609"
 }
