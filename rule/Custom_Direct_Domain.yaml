@@ -1,7 +1,7 @@
 # Generated from rule/Custom_Direct.list
 # REPO: https://github.com/Aethersailor/Custom_OpenClash_Rules
 # SOURCE: https://github.com/Aethersailor/Custom_OpenClash_Rules/blob/main/rule/Custom_Direct.list
-# TOTAL: 1043
+# TOTAL: 1054
 
 payload:
   - '+.00333118.com'
@@ -26,6 +26,7 @@ payload:
   - '+.2mcnxs.cc'
   - '+.365ting.com'
   - '+.365wp.top'
+  - '+.3688baihuo.com'
   - '+.3ced.top'
   - '+.3d-apollo.com'
   - '+.3dwhere.com'
@@ -66,6 +67,7 @@ payload:
   - '+.88996api.cloud'
   - '+.8kc.top'
   - '+.8x14khzwmi.com'
+  - '+.8z8dlsjkn2.com'
   - '+.900cha.com'
   - '+.91biu.work'
   - '+.91shenfan.com'
@@ -166,6 +168,7 @@ payload:
   - '+.browserscan.net'
   - '+.bs-iot.com'
   - '+.bsbsb.top'
+  - '+.btsel5g.cc'
   - '+.bunny.net'
   - '+.bvmlt.top'
   - '+.bxlsj.com'
@@ -274,6 +277,7 @@ payload:
   - '+.eagsen.com'
   - '+.easytier.top'
   - '+.easytomessage.com'
+  - '+.ec766.com'
   - '+.eceshi.com'
   - '+.ectaiping.com'
   - '+.einfo-tech.com'
@@ -395,6 +399,7 @@ payload:
   - '+.gwmapp-w.com'
   - '+.gxcould.com'
   - '+.gxnnjidingkeji.top'
+  - '+.gxnnxsqy.top'
   - '+.gxrke1715.com'
   - '+.gzjkoa.com'
   - '+.gzybao.com'
@@ -466,6 +471,7 @@ payload:
   - '+.hzssjp.com'
   - '+.hzttwl.com'
   - '+.hzyi.eu.org'
+  - '+.i955jr0pk.com'
   - '+.ibnjl.shop'
   - '+.ibwm5lynb6.com'
   - '+.icvcs.com'
@@ -646,6 +652,7 @@ payload:
   - '+.neihang.net'
   - '+.netzz.net'
   - '+.nicezhuanye.com'
+  - '+.njlisi.top'
   - '+.njonemall.com'
   - '+.nkxingxh.top'
   - '+.nlyd.club'
@@ -681,6 +688,7 @@ payload:
   - '+.ourschool.cc'
   - '+.p01.epsonconnect.com'
   - '+.packertec.com'
+  - '+.paijitang.com'
   - '+.pailedi.com'
   - '+.panjue.com'
   - '+.paperang.com'
@@ -771,6 +779,7 @@ payload:
   - '+.shanghai-parking.com'
   - '+.shanghongbei.com'
   - '+.share123.top'
+  - '+.shccywlkj.xyz'
   - '+.shenzhendongwei.com'
   - '+.shineacc.com'
   - '+.shrxnet.com'
@@ -874,6 +883,7 @@ payload:
   - '+.type.fun'
   - '+.tztec.top'
   - '+.u-carloan.com'
+  - '+.u5nm5uvh1w.com'
   - '+.uascent-iot.com'
   - '+.ugdocker.link'
   - '+.ugediao.com'
@@ -1001,6 +1011,7 @@ payload:
   - '+.yooc.me'
   - '+.youqian.pro'
   - '+.youzhiyouxing.com'
+  - '+.yrqvlchq5.com'
   - '+.yshoufa.com'
   - '+.yueti.vip'
   - '+.yunqin.online'
