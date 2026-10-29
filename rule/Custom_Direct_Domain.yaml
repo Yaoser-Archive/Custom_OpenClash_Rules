@@ -1,7 +1,7 @@
 # Generated from rule/Custom_Direct.list
 # REPO: https://github.com/Aethersailor/Custom_OpenClash_Rules
 # SOURCE: https://github.com/Aethersailor/Custom_OpenClash_Rules/blob/main/rule/Custom_Direct.list
-# TOTAL: 1034
+# TOTAL: 1043
 
 payload:
   - '+.00333118.com'
@@ -35,6 +35,7 @@ payload:
   - '+.44nc.com'
   - '+.4942.cc'
   - '+.4kgj.com'
+  - '+.4kzn.cc'
   - '+.4xiaoshuo.org'
   - '+.51kandianshi.com'
   - '+.51mowan.com'
@@ -636,6 +637,7 @@ payload:
   - '+.myrny.xin'
   - '+.myshopex.com'
   - '+.mystery0.vip'
+  - '+.myviewcloud.com'
   - '+.naitanghuyu.com'
   - '+.naixi.com'
   - '+.nanhuabx.com'
@@ -757,6 +759,7 @@ payload:
   - '+.sct.ftqq.com'
   - '+.scyol.com'
   - '+.sdk-log-upload-os.hoyoverse.com'
+  - '+.sduc.cloud'
   - '+.seaflysoft.com'
   - '+.seedpace.com'
   - '+.senachina.com'
@@ -764,11 +767,13 @@ payload:
   - '+.server2.cn2gias.uk'
   - '+.sgllife.com'
   - '+.sgtv.ii00.cc'
+  - '+.shandian.blog'
   - '+.shanghai-parking.com'
   - '+.shanghongbei.com'
   - '+.share123.top'
   - '+.shenzhendongwei.com'
   - '+.shineacc.com'
+  - '+.shrxnet.com'
   - '+.shsw.top'
   - '+.shuangqingtech.com'
   - '+.shuangxiumall.com'
@@ -776,6 +781,7 @@ payload:
   - '+.shulex.com'
   - '+.shunjing.xin'
   - '+.shuqiandiqiu.com'
+  - '+.shytkjgs.com'
   - '+.shyxhy.com'
   - '+.sisiim.com'
   - '+.sixloy428.top'
@@ -898,6 +904,7 @@ payload:
   - '+.wawo.cc'
   - '+.we-stats.com'
   - '+.webs.vc'
+  - '+.weiguangshanyao.com'
   - '+.weixinpcs.com'
   - '+.wenyi188.com'
   - '+.wera.eu.org'
@@ -971,6 +978,7 @@ payload:
   - '+.xxjnjd.com'
   - '+.xxrsm.com'
   - '+.xyys.com'
+  - '+.xzjykj.com'
   - '+.xzong.online'
   - '+.xzsckj.com'
   - '+.xzzhtc.com'
@@ -998,6 +1006,7 @@ payload:
   - '+.yunqin.online'
   - '+.yunzuoye.net'
   - '+.yyshub.top'
+  - '+.yyxdmn.com'
   - '+.yzcsoft.com'
   - '+.z-tek.com'
   - '+.z6e.com'
