@@ -10,7 +10,7 @@
     },
     "rule/Custom_Direct_Domain.yaml": {
       "behavior": "domain",
-      "sha256": "500cf526825c82ba1361e66c9229b043316f8cc2fb6769e1583f13b9d8d650ed"
+      "sha256": "913f29a7562bc38e5ab73955cbf67fa783a6e0b7afff4ec6bde91ab8369e347b"
     },
     "rule/Custom_Port_Direct.yaml": {
       "behavior": "classical",
@@ -39,7 +39,7 @@
   },
   "repository": "Yaoser-Archive/Custom_OpenClash_Rules",
   "schema_version": 1,
-  "source_sha": "a4d3745569b72ed72d36549bdf75a8540140cac5",
+  "source_sha": "f8e1673cc18421ab58ef9e73684ee5d459fc405f",
   "template": "cfg/Custom_Clash_Lite.ini",
-  "upstream_sha": "ec652058f2e2535d062705824ae7100fcf560e7b"
+  "upstream_sha": "39b1cae70a65d5ae657fedd9f70b93e5db3b62fd"
 }
