@@ -1,7 +1,7 @@
 # Generated from rule/Custom_Direct.list
 # REPO: https://github.com/Aethersailor/Custom_OpenClash_Rules
 # SOURCE: https://github.com/Aethersailor/Custom_OpenClash_Rules/blob/main/rule/Custom_Direct.list
-# TOTAL: 1068
+# TOTAL: 1071
 
 payload:
   - '+.00333118.com'
@@ -575,6 +575,7 @@ payload:
   - '+.leadweigh.com'
   - '+.leelen.com'
   - '+.letaoedu.com'
+  - '+.leux.net'
   - '+.lezuan6.com'
   - '+.lg3000.top'
   - '+.lightmake.site'
@@ -593,6 +594,7 @@ payload:
   - '+.lsposed.zip'
   - '+.lty02.com'
   - '+.lucky.gd'
+  - '+.luxiangwu.com'
   - '+.lw5.co'
   - '+.lyihub.com'
   - '+.lyilife.com'
@@ -891,6 +893,7 @@ payload:
   - '+.tuxing.art'
   - '+.twinkstar.com'
   - '+.twtapp.com'
+  - '+.tylk.cc'
   - '+.type.fun'
   - '+.tztec.top'
   - '+.u-carloan.com'
