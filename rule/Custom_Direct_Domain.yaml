@@ -1,7 +1,7 @@
 # Generated from rule/Custom_Direct.list
 # REPO: https://github.com/Aethersailor/Custom_OpenClash_Rules
 # SOURCE: https://github.com/Aethersailor/Custom_OpenClash_Rules/blob/main/rule/Custom_Direct.list
-# TOTAL: 1094
+# TOTAL: 1099
 
 payload:
   - '+.00333118.com'
@@ -131,6 +131,7 @@ payload:
   - '+.apm-log-upload-os.hoyoverse.com'
   - '+.appracle.com'
   - '+.aqtwwx.net'
+  - '+.arena-cn.com'
   - '+.argotunnel.com'
   - '+.armvm.com'
   - '+.asgardion.space'
@@ -337,6 +338,7 @@ payload:
   - '+.fsytss.com'
   - '+.ft07.com'
   - '+.ftqq.com'
+  - '+.ftsup.com'
   - '+.functorz.com'
   - '+.funlinkads.com'
   - '+.funmob.top'
@@ -631,6 +633,7 @@ payload:
   - '+.medtechshare.com'
   - '+.meetkb.com'
   - '+.meijian.com'
+  - '+.meimuyingxiao.com'
   - '+.meishiffx.online'
   - '+.meiyitou.top'
   - '+.melecode.com'
@@ -752,6 +755,7 @@ payload:
   - '+.pvz1.com'
   - '+.pwithe.com'
   - '+.pziqna.net'
+  - '+.qdgsny.com'
   - '+.qianfan.app'
   - '+.qiankunshopping.com'
   - '+.qianuni.com'
@@ -1089,6 +1093,7 @@ payload:
   - '+.ztytech.com'
   - '+.zuidazym3u8.com'
   - '+.zuobiao.press'
+  - '+.zxp7.cc'
   - '+.zysou.com'
   - '+.zyyct.com'
   - '+.zzclass.com'
