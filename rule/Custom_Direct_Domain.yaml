@@ -1,7 +1,7 @@
 # Generated from rule/Custom_Direct.list
 # REPO: https://github.com/Aethersailor/Custom_OpenClash_Rules
 # SOURCE: https://github.com/Aethersailor/Custom_OpenClash_Rules/blob/main/rule/Custom_Direct.list
-# TOTAL: 1110
+# TOTAL: 1114
 
 payload:
   - '+.00333118.com'
@@ -469,6 +469,7 @@ payload:
   - '+.hongxingdl.love'
   - '+.hongyanyanbaihuo.online'
   - '+.hooos.com'
+  - '+.hoyoget.com'
   - '+.hpr7e.top'
   - '+.hprtupgrade.com'
   - '+.hrhgstock.com'
@@ -678,6 +679,7 @@ payload:
   - '+.myshopex.com'
   - '+.mystery0.vip'
   - '+.myviewcloud.com'
+  - '+.mzbcars.com'
   - '+.naitanghuyu.com'
   - '+.naixi.com'
   - '+.nanhuabx.com'
@@ -878,6 +880,7 @@ payload:
   - '+.talk-cloud.net'
   - '+.tange365.com'
   - '+.tangguobaohe.com'
+  - '+.taosirenli.top'
   - '+.taotoken.net'
   - '+.tclai.top'
   - '+.tcp.mk'
@@ -1063,6 +1066,7 @@ payload:
   - '+.ynsj001.com'
   - '+.yongyu.xyz'
   - '+.yooc.me'
+  - '+.youkuimg.icu'
   - '+.youqian.pro'
   - '+.youzhiyouxing.com'
   - '+.yrqvlchq5.com'
