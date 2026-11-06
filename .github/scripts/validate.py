@@ -20,6 +20,7 @@ def validate(root, config_path, core, converter='http://127.0.0.1:25500/sub'):
     for filename, behavior in contract.SYNC_RULES.items():
         counts[filename] = contract.validate_rule((root / 'rule' / filename).read_bytes(), behavior)
     policy = contract.convert_policy(config_path, FIXTURE_NAMES, converter)
+    contract.validate_policy(policy, FIXTURE_NAMES, contract.template_revision((root / contract.TEMPLATE).read_bytes()))
     auth_nodes = [{'name': n, 'type': 'ss', 'server': 'example.invalid', 'port': 1,
                    'cipher': 'aes-128-gcm', 'password': 'ci-placeholder'} for n in FIXTURE_NAMES]
     with tempfile.TemporaryDirectory(prefix='lite-core-') as tmp:

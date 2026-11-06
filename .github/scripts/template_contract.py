@@ -141,8 +141,46 @@ def validate_rule(body, behavior):
     return len(entries)
 
 
-def rule_url(filename):
+def rule_url(filename, revision=None):
+    if revision is not None:
+        if filename not in SYNC_RULES or not SHA.fullmatch(revision):
+            raise ValueError('invalid immutable rule reference')
+        return 'https://cdn.jsdmirror.cn/gh/{}@{}/rule/{}'.format(REPOSITORY, revision, filename)
     return 'https://cdn.jsdelivr.net/gh/{}@published/rule/{}'.format(REPOSITORY, filename)
+
+
+def rule_reference(url, filename):
+    if url == rule_url(filename):
+        return 'published'
+    prefix = 'https://cdn.jsdmirror.cn/gh/' + REPOSITORY + '@'
+    suffix = '/rule/' + filename
+    if url.startswith(prefix) and url.endswith(suffix):
+        revision = url[len(prefix):-len(suffix)]
+        if SHA.fullmatch(revision):
+            return revision
+    raise ValueError('unapproved rule URL')
+
+
+def template_revision(body):
+    validate_template(body)
+    references = set()
+    for line in body.decode('utf-8').splitlines():
+        if line.strip().startswith('ruleset=') and 'https://' in line:
+            url = line.split('https://', 1)[1].split(',', 1)[0]
+            url = 'https://' + url
+            references.add(rule_reference(url, url.rsplit('/', 1)[-1]))
+    return references.pop()
+
+
+def render_template(body, revision):
+    validate_template(body)
+    text = body.decode('utf-8')
+    for filename in RULES:
+        pattern = r'https://[^,\s]+/rule/' + re.escape(filename)
+        text = re.sub(pattern, rule_url(filename, revision), text)
+    rendered = text.encode('utf-8')
+    validate_template(rendered)
+    return rendered
 
 
 def expected_rules():
@@ -172,6 +210,7 @@ def expected_rules():
 
 def validate_template(body):
     groups, rules, options = {}, [], {}
+    references = set()
     section = None
     for raw in body.decode('utf-8').splitlines():
         line = raw.strip()
@@ -199,8 +238,9 @@ def validate_template(body):
                 if not match:
                     raise ValueError('invalid remote ruleset')
                 filename = match[2].rsplit('/', 1)[-1]
-                if filename not in RULES or match[2] != rule_url(filename):
+                if filename not in RULES:
                     raise ValueError('rules must use the approved published repository')
+                references.add(rule_reference(match[2], filename))
                 expected_format = 'clash-domain' if RULES[filename] == 'domain' else 'clash-classic'
                 interval = 1800 if filename == 'Custom_Direct_Domain.yaml' else 28800
                 if match[1] != expected_format or int(match[3]) != interval:
@@ -212,6 +252,8 @@ def validate_template(body):
             options[key] = value
         else:
             raise ValueError('unreviewed template option: ' + key)
+    if len(references) != 1:
+        raise ValueError('mixed rule revisions')
     if set(groups) != GROUP_NAMES or rules != expected_rules():
         raise ValueError('group contract or ordered routing contract changed')
     if options != {'enable_rule_generator': 'true', 'overwrite_original_rules': 'true'}:
@@ -275,7 +317,7 @@ def convert_policy(config, names, converter='http://127.0.0.1:25500/sub'):
     return {key: value[key] for key in ('proxy-groups', 'rules', 'rule-providers')}
 
 
-def validate_policy(value, names):
+def validate_policy(value, names, revision=None):
     if not isinstance(value, dict):
         raise ValueError('converter did not return a config')
     nodes = value.get('proxies')
@@ -315,10 +357,12 @@ def validate_policy(value, names):
     if not isinstance(providers, dict) or len(providers) != len(RULES):
         raise ValueError('rule providers changed')
     by_file = {}
+    references = set()
     for name, provider in providers.items():
         filename = provider.get('url', '').rsplit('/', 1)[-1]
-        if filename not in RULES or filename in by_file or provider['url'] != rule_url(filename):
+        if filename not in RULES or filename in by_file:
             raise ValueError('unapproved rule provider')
+        references.add(rule_reference(provider['url'], filename))
         if provider.get('type') != 'http' or provider.get('behavior') != RULES[filename] or provider.get('format', 'yaml') != 'yaml':
             raise ValueError('provider format changed')
         interval = 1800 if filename == 'Custom_Direct_Domain.yaml' else 28800
@@ -328,6 +372,10 @@ def validate_policy(value, names):
         if not path or pathlib.PurePosixPath(path).is_absolute() or '..' in pathlib.PurePosixPath(path).parts:
             raise ValueError('unsafe provider cache path')
         by_file[filename] = name
+    if len(references) != 1:
+        raise ValueError('mixed rule revisions')
+    if revision is not None and references != {revision}:
+        raise ValueError('converted rule revision differs from template')
     expected = []
     for group, rule in expected_rules():
         if rule in RULES:

@@ -45,7 +45,7 @@ class ResourceTests(unittest.TestCase):
         for old, new in [
             ('ruleset=谷歌服务,[]GEOSITE,google-cn', 'ruleset=全球直连,[]GEOSITE,google-cn'),
             ('GEOIP,cn,no-resolve', 'GEOIP,cn'),
-            ('@published/rule/', '@main/rule/'),
+            ('https://cdn.jsdmirror.cn/gh/', 'https://example.invalid/gh/'),
             (',1800', ',28800'),
             ('ruleset=漏网之鱼,[]FINAL', 'ruleset=全球直连,[]FINAL'),
         ]:
@@ -165,13 +165,15 @@ class PublicationTests(unittest.TestCase):
     def test_competing_main_updates_rebuild_and_revalidate_at_most_three_times(self):
         env = {'GITHUB_ACTIONS': 'true', 'GITHUB_WORKSPACE': str(ROOT)}
         for exhausted in (False, True):
+            outcomes = [publication.PublicationRace('race'), publication.PublicationRace('race'),
+                        publication.PublicationRace('race') if exhausted else ('c' * 40, {'files': {}})]
             with self.subTest(exhausted=exhausted), mock.patch.dict(publication.os.environ, env, clear=True), \
                  mock.patch.object(publication, 'git', return_value='a' * 40), \
                  mock.patch.object(publication.shutil, 'copyfile'), \
                  mock.patch.object(publication, 'stage_candidate') as stage, \
+                 mock.patch.object(publication, 'prepare_versioned_candidate'), \
                  mock.patch.object(publication.validation, 'validate') as validate, \
-                 mock.patch.object(publication, 'remote_sha', side_effect=['b' * 40, 'b' * 40, ('b' if exhausted else 'a') * 40]), \
-                 mock.patch.object(publication, 'publish_snapshot', return_value=('c' * 40, {'files': {}})):
+                 mock.patch.object(publication, 'publish_snapshot', side_effect=outcomes):
                 if exhausted:
                     with self.assertRaises(publication.PublicationRace):
                         publication.publish(ROOT, ROOT, ROOT / 'mihomo', 'd' * 40)
