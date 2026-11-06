@@ -58,9 +58,43 @@ def stage_candidate(root, candidate, upstream_sha, fetch=contract.fetch):
     target.write_bytes(template)
 
 
-def publish_snapshot(root, candidate, source_sha, upstream_sha):
+def verify_rule_revision(root, candidate, revision):
+    for filename in contract.SYNC_RULES:
+        body = subprocess.check_output(['git', 'show', revision + ':rule/' + filename], cwd=str(root))
+        if body != (candidate / 'rule' / filename).read_bytes():
+            raise ValueError('rule revision differs from tested candidate')
+
+
+def prepare_versioned_candidate(root, candidate):
+    previous = contract.template_revision((root / contract.TEMPLATE).read_bytes())
+    paths = ['rule/' + name for name in contract.SYNC_RULES]
+    for path in paths:
+        shutil.copyfile(str(candidate / path), str(root / path))
+    git(root, 'add', '--', *paths)
+    changed = bool(git(root, 'diff', '--cached', '--name-only'))
+    if changed:
+        git(root, 'commit', '-m', 'Chore: 构造规则版本快照')
+    revision = git(root, 'rev-parse', 'HEAD')
+    if not changed and previous != 'published':
+        try:
+            verify_rule_revision(root, candidate, previous)
+        except (ValueError, subprocess.CalledProcessError):
+            # A manual rule-only commit can leave the template on its older snapshot.
+            # HEAD already contains the exact staged rules and is a valid replacement.
+            pass
+        else:
+            revision = previous
+    verify_rule_revision(root, candidate, revision)
+    target = candidate / contract.TEMPLATE
+    target.write_bytes(contract.render_template(target.read_bytes(), revision))
+    return revision
+
+
+def publish_snapshot(root, candidate, source_sha, upstream_sha, main_base=None):
     """Use an isolated index: published contains only the tested allowlist."""
     manifest = contract.make_manifest(candidate, source_sha, upstream_sha)
+    if main_base is not None:
+        verify_rule_revision(root, candidate, contract.template_revision((candidate / contract.TEMPLATE).read_bytes()))
     parent = remote_sha(root, 'published')
     if parent:
         git(root, 'fetch', '--no-tags', 'origin', parent)
@@ -79,21 +113,32 @@ def publish_snapshot(root, candidate, source_sha, upstream_sha):
         git(root, 'update-index', '--add', '--cacheinfo', '100644,' + blob + ',manifest.json', env=env)
         tree = git(root, 'write-tree', env=env)
         if parent and tree == git(root, 'rev-parse', parent + '^{tree}'):
-            return parent, manifest
-        args = ['commit-tree', tree]
-        if parent:
-            args += ['-p', parent]
-        commit = git(root, *args, input=('Chore: 发布已验证的 Lite 模板与规则\n\n'
-                     '源版本: {}\n上游版本: {}\n验证: 模板契约、规则内容及固定 Mihomo 核心。\n'
-                     .format(source_sha, upstream_sha)).encode('utf-8'))
+            commit = parent
+        else:
+            commit = None
+        if commit is None:
+            args = ['commit-tree', tree]
+            if parent:
+                args += ['-p', parent]
+            commit = git(root, *args, input=('Chore: 发布已验证的 Lite 模板与规则\n\n'
+                         '源版本: {}\n上游版本: {}\n验证: 模板契约、规则内容及固定 Mihomo 核心。\n'
+                         .format(source_sha, upstream_sha)).encode('utf-8'))
         # A competing publication rejects this push; never replace its history.
         try:
-            git(root, 'push', 'origin', commit + ':refs/heads/published')
+            if main_base is None:
+                git(root, 'push', 'origin', commit + ':refs/heads/published')
+            else:
+                if remote_sha(root, 'main') != main_base:
+                    raise PublicationRace('main advanced before atomic publication')
+                git(root, 'push', '--atomic', 'origin', source_sha + ':refs/heads/main',
+                    commit + ':refs/heads/published')
         except RuntimeError:
-            if remote_sha(root, 'published') != parent:
+            if (remote_sha(root, 'published') != parent
+                    or main_base is not None and remote_sha(root, 'main') != main_base):
                 raise PublicationRace('published advanced before push')
             raise
-        if remote_sha(root, 'published') != commit:
+        if (remote_sha(root, 'published') != commit
+                or main_base is not None and remote_sha(root, 'main') != source_sha):
             raise PublicationRace('published advanced after push')
         return commit, manifest
 
@@ -119,32 +164,21 @@ def publish(root, candidate, core, upstream_sha=None):
             raise RuntimeError('publisher code changed during this run; rerun with the new code')
         base_sha = git(root, 'rev-parse', 'HEAD')
         stage_candidate(root, candidate, upstream_sha)
+        prepare_versioned_candidate(root, candidate)
         validation.validate(candidate, '/base/config/lite-ci/' + contract.TEMPLATE, core)
-        paths = ['rule/' + n for n in contract.SYNC_RULES]
-        for path in paths:
-            shutil.copyfile(str(candidate / path), str(root / path))
-        git(root, 'add', '--', *paths)
+        shutil.copyfile(str(candidate / contract.TEMPLATE), str(root / contract.TEMPLATE))
+        git(root, 'add', '--', contract.TEMPLATE)
         if git(root, 'diff', '--cached', '--name-only'):
-            git(root, 'commit', '-m', 'Chore: 同步已验证的上游规则',
-                '-m', '锁定同一上游提交 {}，通过规则与完整模板检查后更新。'.format(upstream_sha))
+            git(root, 'commit', '-m', 'Chore: 生成固定版本 Lite 模板')
         source_sha = git(root, 'rev-parse', 'HEAD')
         try:
-            if source_sha != base_sha:
-                try:
-                    git(root, 'push', 'origin', 'HEAD:main')
-                except RuntimeError:
-                    if remote_sha(root, 'main') != base_sha:
-                        raise PublicationRace('main advanced before push')
-                    raise
-            if remote_sha(root, 'main') != source_sha:
-                raise PublicationRace('main advanced during publication')
-            publication_sha, manifest = publish_snapshot(root, candidate, source_sha, upstream_sha)
+            publication_sha, manifest = publish_snapshot(root, candidate, source_sha, upstream_sha, main_base=base_sha)
             output('publication_sha', publication_sha)
             output('source_sha', source_sha)
             summary = os.environ.get('GITHUB_STEP_SUMMARY')
             if summary:
                 with open(summary, 'a', encoding='utf-8') as stream:
-                    stream.write('规则发布成功：{}；上游：{}。缓存状态由后续步骤单独报告。\n'.format(publication_sha, upstream_sha))
+                    stream.write('规则发布成功：{}；上游：{}。固定版本镜像验证由后续步骤报告。\n'.format(publication_sha, upstream_sha))
             print(json.dumps({'publication_sha': publication_sha, 'source_sha': source_sha,
                               'upstream_sha': upstream_sha, 'published': True}))
             return manifest
