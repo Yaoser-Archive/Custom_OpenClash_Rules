@@ -1,7 +1,7 @@
 # Generated from rule/Custom_Direct.list
 # REPO: https://github.com/Aethersailor/Custom_OpenClash_Rules
 # SOURCE: https://github.com/Aethersailor/Custom_OpenClash_Rules/blob/main/rule/Custom_Direct.list
-# TOTAL: 1180
+# TOTAL: 1186
 
 payload:
   - '+.00333118.com'
@@ -187,6 +187,7 @@ payload:
   - '+.browserscan.net'
   - '+.bs-iot.com'
   - '+.bsbsb.top'
+  - '+.btgpy.com'
   - '+.btsel5g.cc'
   - '+.bunny.net'
   - '+.bvmlt.top'
@@ -535,6 +536,7 @@ payload:
   - '+.i955jr0pk.com'
   - '+.ibnjl.shop'
   - '+.ibwm5lynb6.com'
+  - '+.ichongjiayuan.com'
   - '+.icvcs.com'
   - '+.idazhe.net'
   - '+.idphotoplus.com'
@@ -583,6 +585,7 @@ payload:
   - '+.jieyunwangluokeji.com'
   - '+.jiliuwang.net'
   - '+.jingheiot.com'
+  - '+.jingxi-wl.com'
   - '+.jinsan168.com'
   - '+.jinzanzan.com'
   - '+.jiqw.com'
@@ -732,6 +735,7 @@ payload:
   - '+.naitanghuyu.com'
   - '+.naixi.com'
   - '+.nanhuabx.com'
+  - '+.nanjyiyun.com'
   - '+.nanshe-tech.com'
   - '+.natchecker.com'
   - '+.neihang.net'
@@ -831,6 +835,7 @@ payload:
   - '+.qmeng.top'
   - '+.qmpx.net'
   - '+.qpe27.top'
+  - '+.qswpt.com'
   - '+.quanxinfu.com'
   - '+.quanzhua.com'
   - '+.quxuanshu.com'
@@ -1119,6 +1124,7 @@ payload:
   - '+.yi-ll.com'
   - '+.yibanbianji.com'
   - '+.yicaiykt.com'
+  - '+.yikeapi.com'
   - '+.yingshi.dog'
   - '+.yiso.fun'
   - '+.yixc.com'
