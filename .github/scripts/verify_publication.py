@@ -8,6 +8,8 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 
 import template_contract as contract
+
+
 def retry_after_seconds(value, wall_clock=time.time):
     """Parse Retry-After seconds or an HTTP date."""
     if value is None:
@@ -31,7 +33,8 @@ def verify(publication_sha, fetch=contract.fetch, clock=time.monotonic, sleep=ti
     succeeded = False
 
     def download(url):
-        for attempt in range(3):
+        transport_failures = 0
+        while True:
             remaining = deadline - clock()
             if remaining <= 0:
                 raise TimeoutError('publication verification budget exhausted')
@@ -41,11 +44,15 @@ def verify(publication_sha, fetch=contract.fetch, clock=time.monotonic, sleep=ti
                     raise TimeoutError('publication verification budget exhausted')
                 return body
             except (OSError, contract.ResourceFetchError) as exc:
-                if attempt == 2:
-                    raise
+                awaiting_visibility = getattr(exc, 'status', None) == 404
+                if not awaiting_visibility:
+                    transport_failures += 1
+                    if transport_failures >= 3:
+                        raise
                 delay = retry_after_seconds(getattr(exc, 'retry_after', None))
                 if delay is None:
-                    delay = 2 * (attempt + 1)
+                    delay = 5 if awaiting_visibility else 2 * transport_failures
+                delay = max(1, delay)
                 if clock() + delay >= deadline:
                     raise TimeoutError('publication verification budget exhausted')
                 sleep(delay)

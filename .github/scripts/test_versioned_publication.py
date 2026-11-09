@@ -91,7 +91,7 @@ class VersionedTests(unittest.TestCase):
         self.assertIsNone(verify_publication.retry_after_seconds('invalid'))
 
     def test_transport_errors_retry_then_fail_with_diagnostics(self):
-        for status in (404, 429, None):
+        for status in (429, None):
             calls = []
             output = io.StringIO()
             def fetch(url, **kwargs):
@@ -102,6 +102,19 @@ class VersionedTests(unittest.TestCase):
             self.assertEqual(len(calls), 3)
             self.assertFalse(json.loads(output.getvalue())['verified'])
             self.assertIn('download failed', output.getvalue())
+
+    def test_new_commit_visibility_wait_uses_shared_deadline(self):
+        timer = [0]
+        calls = []
+        def fetch(url, **kwargs):
+            calls.append(url)
+            raise contract.ResourceFetchError('not visible', status=404)
+        def sleep(seconds):
+            timer[0] += seconds
+        with mock.patch('sys.stdout', io.StringIO()), self.assertRaises(TimeoutError):
+            verify_publication.verify('a' * 40, fetch=fetch, clock=lambda: timer[0], sleep=sleep, budget=30)
+        self.assertGreater(len(calls), 3)
+        self.assertLessEqual(timer[0], 30)
 
     def fixture(self, directory):
         base = pathlib.Path(directory)
