@@ -19,13 +19,13 @@ Lite 保留原 14 个分组名称、默认选择和检测间隔。192 在私有�
 3. 构造规则提交 R，生成全部引用 JSDMirror 完整 R 的模板，再形成源提交 S。规则未变时复用 R。逐文件核对 R、S 与已验证候选，使用一次原子快进推送发布 main 和 published；分支并发前进时最多重新构建、验证三次。
 4. 在同一运行中核对固定源提交 S 和 JSDMirror 规则提交 R 的实际字节哈希。流程不会依赖机器人推送触发下一次工作流；这是 [GitHub 的事件触发限制](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow)。
 
-自动发布后的固定版本验证采用最多 3 路并发、全流程共享 240 秒预算、单次 HTTP 最多 10 秒及最多 3 次传输重试。任一文件哈希错误或下载失败均报告失败，并分别显示规则发布与镜像校验状态。历史 jsDelivr 分支缓存由独立手动工作流维护。
+自动发布后的固定版本验证采用最多 3 路并发、全流程共享 240 秒预算、单次 HTTP 最多 10 秒及最多 3 次传输重试。任一文件哈希错误或下载失败均报告失败，并分别显示规则发布与镜像校验状态。公开导入入口使用 raw.githubusercontent.com 的 published 模板；规则使用固定提交 JSDMirror 地址。
 
 公开 Lite 使用 `https://cdn.jsdmirror.cn/gh/Yaoser-Archive/Custom_OpenClash_Rules@<完整规则提交 SHA>/rule/<文件名>`。所有七个 provider 固定同一提交。客户端应启用完整订阅自动刷新以切换版本。manifest v1 的 `source_sha` 对应包含生成模板的 S；模板与规则均可按 S 下载并校验。
 
 192 每 15 分钟检查最新发布清单。固定源提交下载模板和规则，校验并转换两格式候选，保留私有节点、DNS、认证、计量和 Novix 默认选择。正式订阅的规则 URL 固定到同一提交，缓存路径包含文件哈希；通过核心、私有字段及主 Novix 通路检查后原子切换。失败继续服务上一版；本地未审核的新模板结构会被拒绝，不下载执行远端 Python。网关每 15 分钟只刷新 convert_oribit；其他客户端使用自身的订阅刷新设置。
 
-清理工作流只分页统计失败和取消记录，不删除日志。Dependabot 自动合并只接受本仓库机器人 PR，要求 PR 仍指向本次成功运行的提交，且同一检查套件中的 `validate-lite` 成功；不检出或执行 PR 代码。
+仓库保留校验、同步发布和 Dependabot 自动合并三个工作流。Dependabot 自动合并只接受本仓库机器人 PR，要求 PR 仍指向本次成功运行的提交，且同一检查套件中的 `validate-lite` 成功；不检出或执行 PR 代码。
 
 ## 验证与工具
 

@@ -85,6 +85,24 @@ class VersionedTests(unittest.TestCase):
             verify_publication.verify('a' * 40, fetch=fetch)
         self.assertEqual(len(calls), 1)
 
+    def test_retry_after_formats(self):
+        self.assertEqual(verify_publication.retry_after_seconds('5'), 5)
+        self.assertEqual(verify_publication.retry_after_seconds('Thu, 01 Jan 1970 00:00:10 GMT', wall_clock=lambda: 1), 9)
+        self.assertIsNone(verify_publication.retry_after_seconds('invalid'))
+
+    def test_transport_errors_retry_then_fail_with_diagnostics(self):
+        for status in (404, 429, None):
+            calls = []
+            output = io.StringIO()
+            def fetch(url, **kwargs):
+                calls.append(url)
+                raise contract.ResourceFetchError('download failed', status=status, retry_after='0')
+            with self.subTest(status=status), mock.patch('sys.stdout', output), self.assertRaises(contract.ResourceFetchError):
+                verify_publication.verify('a' * 40, fetch=fetch, sleep=lambda seconds: None)
+            self.assertEqual(len(calls), 3)
+            self.assertFalse(json.loads(output.getvalue())['verified'])
+            self.assertIn('download failed', output.getvalue())
+
     def fixture(self, directory):
         base = pathlib.Path(directory)
         remote, local = base / 'remote.git', base / 'checkout'

@@ -1,5 +1,5 @@
 name: 🐛 模板错判上报 (Template Bug)
-description: 上报你在模板规则中发现的错误 (Bug report for template rules)
+description: 上报 Lite 模板的转换或分流错误
 title: '[模板错误] 简要描述问题'
 labels: ["bug"]
 
@@ -37,11 +37,7 @@ body:
       description: 发现问题所在的模板
       multiple: true
       options:
-        - Custom_Clash.ini
-        - Custom_Clash_Full.ini
-        - Custom_Clash_GFW.ini
         - Custom_Clash_Lite.ini
-        - Custom_Clash_Mainland.ini
     validations:
       required: true
 

@@ -1,13 +1,26 @@
 #!/usr/bin/env python3
 """Verify one published snapshot and its immutable client resources."""
 import argparse
+import email.utils
 import json
 import os
 import time
 from concurrent.futures import ThreadPoolExecutor
 
 import template_contract as contract
-from cache_refresh import retry_after_seconds
+def retry_after_seconds(value, wall_clock=time.time):
+    """Parse Retry-After seconds or an HTTP date."""
+    if value is None:
+        return None
+    value = str(value).strip()
+    if value.isdigit():
+        return int(value)
+    try:
+        date = email.utils.parsedate_to_datetime(value)
+        return max(0, date.timestamp() - wall_clock())
+    except (TypeError, ValueError, OverflowError):
+        return None
+
 
 
 def verify(publication_sha, fetch=contract.fetch, clock=time.monotonic, sleep=time.sleep, budget=240):
