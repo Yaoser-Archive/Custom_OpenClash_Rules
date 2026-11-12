@@ -2,7 +2,7 @@
   "files": {
     "cfg/Custom_Clash_Lite.ini": {
       "behavior": "ini",
-      "sha256": "d95792667ad9f7c076deb45f521e18b44027adf7caf84c34582c5617a4110f44"
+      "sha256": "4cb20b21aa78e3ff456eabb2e27903893975b0853d43c095b9cbbbb76509b607"
     },
     "rule/Custom_Direct_Classical_IP.yaml": {
       "behavior": "classical",
@@ -10,7 +10,7 @@
     },
     "rule/Custom_Direct_Domain.yaml": {
       "behavior": "domain",
-      "sha256": "70000dc84ffd990af8824742a5474b849abccd305be4d188fffce60b357c5ee3"
+      "sha256": "c5ed4ca7097cdaaa704323822ab574a06f20f538909da857cde5bbbc1e69b858"
     },
     "rule/Custom_Port_Direct.yaml": {
       "behavior": "classical",
@@ -39,7 +39,7 @@
   },
   "repository": "Yaoser-Archive/Custom_OpenClash_Rules",
   "schema_version": 1,
-  "source_sha": "b73a6d2df5293a67912620051ff19c0c3a373940",
+  "source_sha": "5f92b8e2d0991242069b28268e69a365cefd1820",
   "template": "cfg/Custom_Clash_Lite.ini",
-  "upstream_sha": "1ceee12ed9a5b6ed1b4fa75f2b78e38fcfa05dfa"
+  "upstream_sha": "5e7e154d84f3b92536baaac105cd7b55d9807766"
 }
