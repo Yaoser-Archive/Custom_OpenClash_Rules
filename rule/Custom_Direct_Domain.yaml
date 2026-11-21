@@ -1,7 +1,7 @@
 # Generated from rule/Custom_Direct.list
 # REPO: https://github.com/Aethersailor/Custom_OpenClash_Rules
 # SOURCE: https://github.com/Aethersailor/Custom_OpenClash_Rules/blob/main/rule/Custom_Direct.list
-# TOTAL: 1279
+# TOTAL: 1286
 
 payload:
   - '+.00333118.com'
@@ -53,6 +53,7 @@ payload:
   - '+.4kgj.com'
   - '+.4kzn.cc'
   - '+.4xiaoshuo.org'
+  - '+.4xvr.net'
   - '+.51kandianshi.com'
   - '+.51mowan.com'
   - '+.51tbox.com'
@@ -73,6 +74,7 @@ payload:
   - '+.6apzfdx.com'
   - '+.6v520.net'
   - '+.71.am'
+  - '+.7189099.com'
   - '+.737698.xyz'
   - '+.757abc.com'
   - '+.77505113.com'
@@ -220,6 +222,7 @@ payload:
   - '+.canghaiip.com'
   - '+.cangjie-lang.net'
   - '+.cbn.id'
+  - '+.cc-gateway.com'
   - '+.cc.ink'
   - '+.cc39ute.shop'
   - '+.cc44dd.com'
@@ -288,6 +291,7 @@ payload:
   - '+.cydiabc.top'
   - '+.cym520.top'
   - '+.cyouzai.com'
+  - '+.czssdgz.com'
   - '+.d4ctech.com'
   - '+.dadateach.com'
   - '+.dahai96.com'
@@ -959,11 +963,13 @@ payload:
   - '+.sksight.com'
   - '+.skxvc.com'
   - '+.skyts.net'
+  - '+.smartbed.ink'
   - '+.smartryan.com'
   - '+.smw9t0a.cc'
   - '+.snfox.com'
   - '+.snltty.com'
   - '+.socbro.com'
+  - '+.sofan.in'
   - '+.sollin.top'
   - '+.soulteary.com'
   - '+.spisec.com'
@@ -1200,6 +1206,7 @@ payload:
   - '+.ycoo.net'
   - '+.ycyct.com'
   - '+.ydayc.com'
+  - '+.ydxian.xyz'
   - '+.yeguodj.com'
   - '+.ygdj17.com'
   - '+.yhxjkj.top'
