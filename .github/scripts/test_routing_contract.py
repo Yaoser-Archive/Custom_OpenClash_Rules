@@ -66,13 +66,13 @@ class RoutingContractTests(unittest.TestCase):
             'ruleset=谷歌服务,[]IP-CIDR,8.8.4.4/32,no-resolve',
             'ruleset=谷歌服务,[]GEOIP,google,no-resolve',
         ] + ['ruleset=全球直连,[]DOMAIN,' + name + '.oribit.cn'
-             for name in ('sc', 'nj', 'cyber', 'cybercd2', 'dragon', 'dsh')] + [
+             for name in ('sc', 'nj', 'cyber', 'cybercd2', 'dragon', 'dsh', 'convert')] + [
             'ruleset=手动选择,[]DOMAIN-SUFFIX,oribit.cn',
         ]
-        self.assertEqual(prefix[:15], expected_prefix)
-        self.assertEqual(len(prefix), 34)
+        self.assertEqual(prefix[:len(expected_prefix)], expected_prefix)
+        self.assertEqual(len(prefix), 35)
         self.assertEqual(len(contract.expected_rules()), contract.EXPECTED_RULE_COUNT)
-        self.assertIn('Custom_Direct_Domain.yaml', prefix[15])
+        self.assertIn('Custom_Direct_Domain.yaml', prefix[len(expected_prefix)])
 
     def test_template_rejects_suffix_direct_or_parent_preceding_exceptions(self):
         text = (ROOT / contract.TEMPLATE).read_text(encoding='utf-8')
@@ -105,14 +105,15 @@ class RoutingContractTests(unittest.TestCase):
         policy, names = converted_fixture()
         contract.validate_policy(policy, names)
         self.assertEqual(policy['rules'][8], 'DOMAIN,sc.oribit.cn,全球直连')
-        self.assertEqual(policy['rules'][14], 'DOMAIN-SUFFIX,oribit.cn,手动选择')
-        self.assertEqual(len(policy['rules']), 34)
+        self.assertEqual(policy['rules'][14], 'DOMAIN,convert.oribit.cn,全球直连')
+        self.assertEqual(policy['rules'][15], 'DOMAIN-SUFFIX,oribit.cn,手动选择')
+        self.assertEqual(len(policy['rules']), 35)
         for mutation in ('suffix', 'order', 'google-direct', 'google-dns-resolve'):
             bad = copy.deepcopy(policy)
             if mutation == 'suffix':
-                bad['rules'][8] = 'DOMAIN-SUFFIX,sc.oribit.cn,全球直连'
+                bad['rules'][14] = 'DOMAIN-SUFFIX,convert.oribit.cn,全球直连'
             elif mutation == 'order':
-                bad['rules'][8], bad['rules'][14] = bad['rules'][14], bad['rules'][8]
+                bad['rules'][14], bad['rules'][15] = bad['rules'][15], bad['rules'][14]
             elif mutation == 'google-direct':
                 next(g for g in bad['proxy-groups'] if g['name'] == '手动选择')['proxies'].append('全球直连')
             else:

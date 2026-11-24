@@ -39,9 +39,9 @@ MAX_BYTES = 1024 * 1024
 GOOGLE_DNS_SERVERS = ['https://8.8.8.8/dns-query', 'https://8.8.4.4/dns-query']
 GOOGLE_DNS_KEYS = ['geosite:google-cn', 'geosite:googlefcm', 'geosite:google']
 ORIBIT_DIRECT_HOSTS = tuple(name + '.oribit.cn' for name in
-                            ('sc', 'nj', 'cyber', 'cybercd2', 'dragon', 'dsh'))
-EXPECTED_RULE_COUNT = 34
-CONTRACT_VERSION = 'lite-google-oribit-34-v1'
+                            ('sc', 'nj', 'cyber', 'cybercd2', 'dragon', 'dsh', 'convert'))
+EXPECTED_RULE_COUNT = 35
+CONTRACT_VERSION = 'lite-google-oribit-35-v1'
 SHA = re.compile(r'^[0-9a-f]{40}$')
 DIGEST = re.compile(r'^[0-9a-f]{64}$')
 
