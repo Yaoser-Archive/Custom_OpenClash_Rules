@@ -4,7 +4,7 @@
 
 ## 发布内容
 
-Lite 保留原 14 个分组名称、默认选择和检测间隔。192 在私有基线上保留 Novix、固定 CF、Reality 三条独立线路，默认 Novix。所有 Google 服务（包括 google-cn、字体、下载和 FCM）优先于直连规则走代理；两个 Google 分组禁止可达的直连选项。`sc`、`nj`、`cyber`、`cybercd2`、`dragon`、`dsh` 的 `.oribit.cn` 域名采用精确 DOMAIN 直连，随后 DOMAIN-SUFFIX 将父域及其余子域交给手动选择。34 条规则的顺序由契约检查固定，例外不扩大到更深子域。游戏下载采用上游的域名和 IP 两份 CDN 规则，Google Play 等 Google 下载仍走代理。国内直连域名规则每 1800 秒更新，其余每 28800 秒更新。
+Lite 保留原 14 个分组名称、默认选择和检测间隔。192 在私有基线上保留 Novix、固定 CF、Reality 三条独立线路，默认 Novix。所有 Google 服务（包括 google-cn、字体、下载和 FCM）优先于直连规则走代理。两个 Google 分组禁止可达的直连选项。`sc`、`nj`、`cyber`、`cybercd2`、`dragon`、`dsh`、`convert` 的 `.oribit.cn` 域名采用精确 DOMAIN 直连，随后 DOMAIN-SUFFIX 将父域及其余子域交给手动选择。35 条规则的顺序由契约检查固定，精确匹配限定在列出的完整域名。游戏下载采用上游的域名和 IP 两份 CDN 规则，Google Play 等 Google 下载仍走代理。国内直连域名规则每 1800 秒更新，其余每 28800 秒更新。
 
 `main` 是源文件入口；`published` 是通过检查的 Lite 入口，包含模板、8 份规则及 `manifest.json`。其中旧 Steam 规则为兼容旧模板保留，新 Lite 使用 7 个规则提供者。清单固定仓库、源提交、上游提交和逐文件 SHA256。192 从清单中的源提交下载，避免一次更新混入不同版本。
 
