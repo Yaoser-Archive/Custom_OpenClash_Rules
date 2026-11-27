@@ -1,7 +1,7 @@
 # Generated from rule/Custom_Direct.list
 # REPO: https://github.com/Aethersailor/Custom_OpenClash_Rules
 # SOURCE: https://github.com/Aethersailor/Custom_OpenClash_Rules/blob/main/rule/Custom_Direct.list
-# TOTAL: 1317
+# TOTAL: 1321
 
 payload:
   - '+.00333118.com'
@@ -390,6 +390,7 @@ payload:
   - '+.fhendj.com'
   - '+.fileh.xyz'
   - '+.filej.xyz'
+  - '+.fitkingshop.com'
   - '+.fjdejing.com'
   - '+.fjpit.com'
   - '+.flingtrainer.com'
@@ -480,6 +481,7 @@ payload:
   - '+.gta6keji.com'
   - '+.gtakm.com'
   - '+.gtazhiyu.com'
+  - '+.gtl-test.com'
   - '+.guaitao.cc'
   - '+.guang233.com'
   - '+.guangshiting.top'
@@ -490,6 +492,7 @@ payload:
   - '+.guyuns.asia'
   - '+.gvgoo.com'
   - '+.gwmapp-w.com'
+  - '+.gxau.net'
   - '+.gxcould.com'
   - '+.gxnnjidingkeji.top'
   - '+.gxnnxsqy.top'
@@ -796,7 +799,6 @@ payload:
   - '+.mulingyuer.com'
   - '+.myfenghua.com'
   - '+.mykuaidi.com'
-  - '+.mypikpak.net'
   - '+.myrny.xin'
   - '+.myshopex.com'
   - '+.mystery0.vip'
@@ -1062,6 +1064,7 @@ payload:
   - '+.tianruo.xyz'
   - '+.timbrd.com'
   - '+.tixue.net'
+  - '+.tjfuxinjia.com'
   - '+.tjnhscgs.com'
   - '+.tlkg.com'
   - '+.tluyou.com'
@@ -1285,6 +1288,7 @@ payload:
   - '+.zhi10.com'
   - '+.zhidianmijin.top'
   - '+.zhiexa.com'
+  - '+.zhijiwenhua.xyz'
   - '+.zhituwujie.com'
   - '+.zhixingyunke.com'
   - '+.zhongancloud.com'
